@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+        <record id="view_location_form" model="ir.ui.view">
+            <field name="name">stock.location.form</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']"
+                       position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_location_tree2" model="ir.ui.view">
+            <field name="name">stock.location.tree</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_tree2"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='usage']"
+                       position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_location_search" model="ir.ui.view">
+            <field name="name">stock.location.search</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location_id']"
+                       position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="vpicktree" model="ir.ui.view">
+            <field name="name">stock.picking.tree</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_form" model="ir.ui.view">
+            <field name="name">stock.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_out_form" model="ir.ui.view">
+            <field name="name">stock.picking.out.form</field>
+            <field name="model">stock.picking.out</field>
+            <field name="inherit_id" ref="stock.view_picking_out_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_out_tree" model="ir.ui.view">
+            <field name="name">stock.picking.out.tree</field>
+            <field name="model">stock.picking.out</field>
+            <field name="inherit_id" ref="stock.view_picking_out_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_in_form" model="ir.ui.view">
+            <field name="name">stock.picking.in.form</field>
+            <field name="model">stock.picking.in</field>
+            <field name="inherit_id" ref="stock.view_picking_in_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="before">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_in_tree" model="ir.ui.view">
+            <field name="name">stock.picking.in.tree</field>
+            <field name="model">stock.picking.in</field>
+            <field name="inherit_id" ref="stock.view_picking_in_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_internal_search" model="ir.ui.view">
+            <field name="name">stock.picking.internal.search</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@string='Origin']" position="after">
+                    <field name="product_id" position="after">
+                        <field name="operating_unit_id" widget="selection"/>
+                    </field>
+                    <filter string="Operating Unit"
+                            icon="terp-gtk-jump-to-rtl" domain="[]"
+                            context="{'group_by':'operating_unit_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_out_search" model="ir.ui.view">
+            <field name="name">stock.picking.out.search</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_out_search"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="before">
+                  <field name="operating_unit_id" widget="selection"/>
+                </field>
+                <xpath expr="//filter[@string='Journal']" position="after">
+                    <filter string="Operating Unit"
+                            icon="terp-gtk-jump-to-rtl" domain="[]"
+                            context="{'group_by':'operating_unit_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_in_search" model="ir.ui.view">
+            <field name="name">stock.picking.in.search</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_in_search"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                  <field name="operating_unit_id" widget="selection"/>
+                </field>
+                <xpath expr="//filter[@string='Journal']" position="after">
+                    <filter string="Operating Unit"
+                            icon="terp-gtk-jump-to-rtl" domain="[]"
+                            context="{'group_by':'operating_unit_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_move_tree" model="ir.ui.view">
+            <field name="name">stock.move.tree</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location_id']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+                <xpath expr="//field[@name='location_dest_id']"
+                       position="after">
+                    <field name="operating_unit_dest_id"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="view_move_picking_tree" model="ir.ui.view">
+            <field name="name">stock.move.tree</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_picking_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location_id']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+                <xpath expr="//field[@name='location_dest_id']"
+                       position="after">
+                    <field name="operating_unit_dest_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="stock_move_tree" model="ir.ui.view">
+            <field name="name">Stock Moves</field>
+            <field name="model">stock.move</field>
+            <field name="field_parent">move_history_ids</field>
+            <field name="inherit_id" ref="stock.stock_move_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location_id']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+                <xpath expr="//field[@name='location_dest_id']"
+                       position="after">
+                    <field name="operating_unit_dest_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="stock_move_tree2" model="ir.ui.view">
+            <field name="name">Stock Moves</field>
+            <field name="model">stock.move</field>
+            <field name="field_parent">move_history_ids2</field>
+            <field name="inherit_id" ref="stock.stock_move_tree2"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location_id']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+                <xpath expr="//field[@name='location_dest_id']"
+                       position="after">
+                    <field name="operating_unit_dest_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_move_form" model="ir.ui.view">
+            <field name="name">stock.move.form</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location_id']" position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+                <xpath expr="//field[@name='location_dest_id']"
+                       position="after">
+                    <field name="operating_unit_dest_id"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>
