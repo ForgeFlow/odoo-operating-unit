@@ -20,12 +20,17 @@
 ##############################################################################
 
 {
-    'name': 'Invoices with Operating Unit Categorization',
+    'name': 'Invoices with Operating Unit',
     'version': '1.0',
     'category': 'Generic Modules/Sales & Purchases',
     'description': '''
-Add the Operating Unit on Invoices as well as the related filter and
-button in the search form.
+Invoices with Operating Unit
+============================
+This module introduces the operating unit to the invoice.
+
+It implements user's security rules.
+
+
 ''',
     'author': "Eficent,Odoo Community Association (OCA)",
     'website': 'http://www.eficent.com',

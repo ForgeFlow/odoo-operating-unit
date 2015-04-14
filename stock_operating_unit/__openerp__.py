@@ -25,6 +25,9 @@
 Stock with Operating Unit
 ========================
 Adds the operating unit to the stock locations.
+Adds the operating unit to stock moves.
+Adds the requesting operating unit to stock pickings.
+Implements user's security access rules.
 
 """,
     'depends': ['stock', 'operating_unit'],

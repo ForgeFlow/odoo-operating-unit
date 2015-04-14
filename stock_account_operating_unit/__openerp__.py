@@ -25,6 +25,8 @@
 Stock account moves with Operating Unit
 =======================================
 Incorporates the operating to account move lines created from stock moves.
+Creates account move lines in intra-company, inter-operating unit stock moves,
+for real-time stock valuation.
 
 """,
     'depends': ['stock_operating_unit', 'account_operating_unit'],

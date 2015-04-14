@@ -28,7 +28,13 @@
     "depends": ["purchase", "operating_unit"],
     "description": """
 Operating Unit in Purchase Orders
-================================
+=================================
+This module introduces the operating unit to the purchase order.
+The operating unit is copied to the invoice.
+The operating unit is copied to the stock picking.
+
+It implements user's security rules.
+
 
     """,
     "init_xml": [],
