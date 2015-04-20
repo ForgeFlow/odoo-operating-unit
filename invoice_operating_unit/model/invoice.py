@@ -28,6 +28,17 @@ class account_invoice(orm.Model):
                                              'Operating Unit'),
     }
 
+    def finalize_invoice_move_lines(self, cr, uid, invoice_browse, move_lines):
+        move_lines = super(account_invoice, self).finalize_invoice_move_lines(
+            cr, uid, invoice_browse, move_lines)
+        new_move_lines = []
+        for line_tuple in move_lines:
+            if invoice_browse.operating_unit_id:
+                line_tuple[2]['operating_unit_id'] = \
+                    invoice_browse.operating_unit_id.id
+            new_move_lines.append(line_tuple)
+        return new_move_lines
+
 
 class account_invoice_line(orm.Model):
     _inherit = 'account.invoice.line'

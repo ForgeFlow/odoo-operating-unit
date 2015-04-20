@@ -53,6 +53,18 @@ class account_move(orm.Model):
             context = {}
         ml_obj = self.pool.get('account.move.line')
         for move in self.browse(cr, uid, ids, context=context):
+            # If all move lines point to the same operating unit, there's no
+            #  need to create a balancing move line
+            multiple_ou = False
+            previous_ou = False
+            for line in move.line_id:
+                if line.operating_unit_id:
+                    if previous_ou and previous_ou \
+                            != line.operating_unit_id.id:
+                        multiple_ou = True
+                    previous_ou = line.operating_unit_id.id
+            if not multiple_ou:
+                continue
             for line in move.line_id:
                 cleared = False
                 if line.operating_unit_id:

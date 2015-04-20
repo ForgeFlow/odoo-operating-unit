@@ -2,6 +2,29 @@
 <openerp>
     <data>
 
+        <record id="view_warehouse" model="ir.ui.view">
+            <field name="name">stock.warehouse</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']"
+                       position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_warehouse_tree" model="ir.ui.view">
+            <field name="name">stock.warehouse.tree</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']"
+                       position="after">
+                    <field name="operating_unit_id"/>
+                </xpath>
+            </field>
+        </record>
 
         <record id="view_location_form" model="ir.ui.view">
             <field name="name">stock.location.form</field>
@@ -10,7 +33,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='company_id']"
                        position="after">
-                    <field name="operating_unit_id"/>
+                    <field name="operating_unit_id" required="0"
+                           attrs="{'required' : [('location_id', '!=', False)]}"/>
                 </xpath>
             </field>
         </record>

@@ -32,7 +32,8 @@ This module introduces the following features:
 company level.
 - When users create a journal entry with lines in different operating units,
 at the time of posting the journal entry it automatically creates the
-corresponding lines in the Inter-operating unit clearing account.
+corresponding lines in the Inter-operating unit clearing account,
+making each OU self-balancing.
 - Introduces checks that prevent users from entering cross-operating unit
 journal entries using different accounts.
 

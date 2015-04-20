@@ -20,9 +20,8 @@ from openerp.osv import orm, fields
 from openerp.tools.translate import _
 
 
-class stock_location(orm.Model):
-    _inherit = 'stock.location'
-
+class stock_warehouse(orm.Model):
+    _inherit = "stock.warehouse"
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
                                              'Operating Unit',
@@ -33,6 +32,62 @@ class stock_location(orm.Model):
         'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
             'res.users').operating_unit_default_get(cr, uid, uid, context=c),
     }
+
+    def _check_same_operating_unit(self, cr, uid, ids, context=None):
+        for w in self.browse(cr, uid, ids, context=context):
+            if (
+                w.operating_unit_id != w.lot_input_id.operating_unit_id
+                or w.operating_unit_id != w.lot_stock_id.operating_unit_id
+                or w.operating_unit_id != w.lot_output_id.operating_unit_id
+            ):
+                return False
+        return True
+
+    _constraints = [
+        (_check_same_operating_unit,
+         'The warehouse and associated locations must belong to the same '
+         'operating unit.', ['operating_unit_id', 'lot_input_id',
+                             'lot_stock_id', 'lot_output_id'])]
+
+
+class stock_location(orm.Model):
+    _inherit = 'stock.location'
+
+    _columns = {
+        'operating_unit_id': fields.many2one('operating.unit',
+                                             'Operating Unit',
+                                             required=False),
+    }
+
+    _defaults = {
+        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
+            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+    }
+
+    def _check_warehouse_operating_unit(self, cr, uid, ids, context=None):
+        warehouse_obj = self.pool.get('stock.warehouse')
+        for l in self.browse(cr, uid, ids, context=context):
+            w_ids = warehouse_obj.search(cr, uid, [('lot_input_id', '=',
+                                                   l.id)], context=context)
+            for w in warehouse_obj.browse(cr, uid, w_ids, context=context):
+                if l.operating_unit_id != w.operating_unit_id:
+                    return False
+            w_ids = warehouse_obj.search(cr, uid, [('lot_stock_id', '=',
+                                                   l.id)], context=context)
+            for w in warehouse_obj.browse(cr, uid, w_ids, context=context):
+                if l.operating_unit_id != w.operating_unit_id:
+                    return False
+            w_ids = warehouse_obj.search(cr, uid, [('lot_output_id', '=',
+                                                   l.id)], context=context)
+            for w in warehouse_obj.browse(cr, uid, w_ids, context=context):
+                if l.operating_unit_id != w.operating_unit_id:
+                    return False
+        return True
+
+    _constraints = [
+        (_check_warehouse_operating_unit,
+         'This location is assigned to a warehouse that belongs to a '
+         'different operating unit.', ['operating_unit_id'])]
 
 
 class stock_picking(orm.Model):

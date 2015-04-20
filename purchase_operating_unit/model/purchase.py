@@ -38,6 +38,18 @@ class purchase_order(orm.Model):
             'res.users').operating_unit_default_get(cr, uid, uid, context=c),
     }
 
+    def _check_warehouse_operating_unit(self, cr, uid, ids, context=None):
+        for po in self.browse(cr, uid, ids, context=context):
+            if po.warehouse_id and \
+                    po.warehouse_id.operating_unit_id != po.operating_unit_id:
+                return False
+        return True
+
+    _constraints = [
+        (_check_warehouse_operating_unit,
+         'The Quotation / Purchase Order and the Warehouse must belong to '
+         'the same Operating Unit.', ['operating_unit_id', 'warehouse_id'])]
+
     def action_invoice_create(self, cr, uid, ids, context=None):
         if context is None:
             context = {}

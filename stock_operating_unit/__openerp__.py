@@ -15,15 +15,15 @@
 # You should have received a copy of the GNU Affero General Public Lice
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {
-    'name': 'Stock with Operating Unit',
+    'name': 'Stock with Operating Units',
     'version': '1.0',
     'category': 'Generic Modules/Sales & Purchases',
     'author': "Eficent,Odoo Community Association (OCA)",
     "license": "AGPL-3",
     'website': 'http://camptocamp.com',
     'description': """\
-Stock with Operating Unit
-========================
+Stock with Operating Units
+==========================
 Adds the operating unit to the stock locations.
 Adds the operating unit to stock moves.
 Adds the requesting operating unit to stock pickings.
