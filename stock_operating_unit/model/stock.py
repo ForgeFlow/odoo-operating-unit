@@ -33,22 +33,6 @@ class stock_warehouse(orm.Model):
             'res.users').operating_unit_default_get(cr, uid, uid, context=c),
     }
 
-    def _check_same_operating_unit(self, cr, uid, ids, context=None):
-        for w in self.browse(cr, uid, ids, context=context):
-            if (
-                w.operating_unit_id != w.lot_input_id.operating_unit_id
-                or w.operating_unit_id != w.lot_stock_id.operating_unit_id
-                or w.operating_unit_id != w.lot_output_id.operating_unit_id
-            ):
-                return False
-        return True
-
-    _constraints = [
-        (_check_same_operating_unit,
-         'The warehouse and associated locations must belong to the same '
-         'operating unit.', ['operating_unit_id', 'lot_input_id',
-                             'lot_stock_id', 'lot_output_id'])]
-
 
 class stock_location(orm.Model):
     _inherit = 'stock.location'
@@ -84,10 +68,22 @@ class stock_location(orm.Model):
                     return False
         return True
 
+    def _check_required_operating_unit(self, cr, uid, ids, context=None):
+        for l in self.browse(cr, uid, ids, context=context):
+            if l.usage == 'internal' and not l.operating_unit_id:
+                return False
+            if l.usage != 'internal' and l.operating_unit_id:
+                return False
+        return True
+
     _constraints = [
         (_check_warehouse_operating_unit,
          'This location is assigned to a warehouse that belongs to a '
-         'different operating unit.', ['operating_unit_id'])]
+         'different operating unit.', ['operating_unit_id']),
+        (_check_required_operating_unit,
+         'The operating unit should be assigned to internal locations, '
+         'and to non other.', ['operating_unit_id'])
+    ]
 
 
 class stock_picking(orm.Model):
@@ -95,7 +91,8 @@ class stock_picking(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one(
-            'operating.unit', string='Requesting Operating Unit'),
+            'operating.unit', string='Requesting Operating Unit',
+            required=True),
     }
 
     def _prepare_invoice(self, cr, uid, picking, partner, inv_type, journal_id,

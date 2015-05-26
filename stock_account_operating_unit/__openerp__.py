@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public Lice
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {
-    'name': 'Stock account moves with Operating Unit',
+    'name': 'Operating Unit in Stock Management with Real-Time Valuation',
     'version': '1.0',
     'category': 'Generic Modules/Sales & Purchases',
     'author': "Eficent,Odoo Community Association (OCA)",
@@ -24,9 +24,8 @@
     'description': """\
 Stock account moves with Operating Unit
 =======================================
-Incorporates the operating to account move lines created from stock moves.
-Creates account move lines in intra-company, inter-operating unit stock moves,
-for real-time stock valuation.
+- Creates account move lines when stock moves are posted between internal
+locations within the same company, but different OU’s.
 
 """,
     'depends': ['stock_operating_unit', 'account_operating_unit'],

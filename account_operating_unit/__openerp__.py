@@ -36,6 +36,7 @@ corresponding lines in the Inter-operating unit clearing account,
 making each OU self-balancing.
 - Introduces checks that prevent users from entering cross-operating unit
 journal entries using different accounts.
+- The account financial reports include the option to filter by OU.
 
 ''',
     'author': "Eficent,Odoo Community Association (OCA)",

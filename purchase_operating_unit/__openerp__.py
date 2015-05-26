@@ -25,7 +25,7 @@
     "author": "Eficent",
     "website": "http://www.eficent.com",
     "category": "Purchase Management",
-    "depends": ["purchase", "operating_unit"],
+    "depends": ["purchase", "operating_unit", "stock_operating_unit"],
     "description": """
 Operating Unit in Purchase Orders
 =================================

@@ -109,8 +109,8 @@ class account_move(orm.Model):
         return super(account_move, self).post(cr, uid, ids,
                                               context=context)
 
-    def _check_inter_ou_same_account(self, cr, uid, ids, context=None):
-        for move in self.browse(cr, uid, ids, context=context):
+    def _check_inter_ou_same_account(self, cr, uid, ids):
+        for move in self.browse(cr, uid, ids):
             ou = {}
             acc = {}
             for line in move.line_id:
@@ -133,8 +133,8 @@ class account_move(orm.Model):
                 return False
             return True
 
-    def _check_same_ou_dr_cr(self, cr, uid, ids, context=None):
-        for move in self.browse(cr, uid, ids, context=context):
+    def _check_same_ou_dr_cr(self, cr, uid, ids):
+        for move in self.browse(cr, uid, ids):
             dr = {}
             cr = {}
             ou_ids = []
@@ -166,7 +166,7 @@ class account_move(orm.Model):
                     cr[ou_id] > 0
                 ):
                     return False
-            return True
+        return True
 
     _constraints = [
         (_check_inter_ou_same_account,
