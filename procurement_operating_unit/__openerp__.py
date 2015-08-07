@@ -25,24 +25,19 @@
     "author": "Eficent",
     "website": "http://www.eficent.com",
     "category": "Purchase Management",
-    "depends": ["purchase", "operating_unit", "stock_operating_unit",
-                "procurement_operating_unit"],
+    "depends": ["procurement", "operating_unit", "stock_operating_unit"],
     "description": """
-Operating Unit in Purchase Orders
-=================================
-This module introduces the operating unit to the purchase order.
-The operating unit is copied to the invoice.
-The operating unit is copied to the stock picking.
-
+Operating Unit in Procurement Orders
+====================================
+This module introduces the operating unit to the procurement order.
 It implements user's security rules.
 
 
     """,
     "init_xml": [],
     "update_xml": [
-        "view/purchase_order.xml",
-        "view/purchase_order_line.xml",
-        "security/purchase_security.xml",
+        "view/procurement_order.xml",
+        "security/procurement_security.xml",
     ],
     'demo_xml': [
 

@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Copyright (C) 2014 Eficent (<http://www.eficent.com/>)
-#               <contact@eficent.com>
+#              <contact@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,37 +19,4 @@
 #
 ##############################################################################
 
-{
-    "name": "Operating Unit in Purchase Orders",
-    "version": "1.0",
-    "author": "Eficent",
-    "website": "http://www.eficent.com",
-    "category": "Purchase Management",
-    "depends": ["purchase", "operating_unit", "stock_operating_unit",
-                "procurement_operating_unit"],
-    "description": """
-Operating Unit in Purchase Orders
-=================================
-This module introduces the operating unit to the purchase order.
-The operating unit is copied to the invoice.
-The operating unit is copied to the stock picking.
-
-It implements user's security rules.
-
-
-    """,
-    "init_xml": [],
-    "update_xml": [
-        "view/purchase_order.xml",
-        "view/purchase_order_line.xml",
-        "security/purchase_security.xml",
-    ],
-    'demo_xml': [
-
-    ],
-    'test':[
-    ],
-    'installable': True,
-    'active': False,
-    'certificate': '',
-}
+from . import model

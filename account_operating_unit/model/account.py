@@ -41,8 +41,21 @@ class account_move_line(orm.Model):
         'ou_cleared_line_id': fields.many2one('account.move.line',
                                               'Inter-OU Cleared move line',
                                               required=False),
-
     }
+
+    def _check_company_operating_unit(self, cr, uid, ids, context=None):
+        for ml in self.browse(cr, uid, ids, context=context):
+            if ml.company_id and ml.operating_unit_id and \
+                            ml.company_id != ml.operating_unit_id.company_id:
+                return False
+        return True
+
+    _constraints = [
+        (_check_company_operating_unit,
+         'The Company in the Move Line and in the '
+         'Operating Unit must be the same.', ['operating_unit_id',
+                                              'company_id'])
+    ]
 
 
 class account_move(orm.Model):
@@ -176,5 +189,4 @@ class account_move(orm.Model):
         (_check_same_ou_dr_cr,
          'The same operating unit cannot exist in the debit and credit '
          'for the same account',
-         ['line_id']),
-    ]
+         ['line_id'])]

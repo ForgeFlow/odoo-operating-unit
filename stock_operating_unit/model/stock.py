@@ -76,14 +76,24 @@ class stock_location(orm.Model):
                 return False
         return True
 
+    def _check_company_operating_unit(self, cr, uid, ids, context=None):
+        for sl in self.browse(cr, uid, ids, context=context):
+            if sl.company_id and sl.operating_unit_id and \
+                    sl.company_id != sl.operating_unit_id.company_id:
+                return False
+        return True
+
     _constraints = [
         (_check_warehouse_operating_unit,
          'This location is assigned to a warehouse that belongs to a '
          'different operating unit.', ['operating_unit_id']),
         (_check_required_operating_unit,
          'The operating unit should be assigned to internal locations, '
-         'and to non other.', ['operating_unit_id'])
-    ]
+         'and to non other.', ['operating_unit_id']),
+        (_check_company_operating_unit,
+         'The Company in the Stock Location and in the Operating '
+         'Unit must be the same.', ['operating_unit_id',
+                                    'company_id'])]
 
 
 class stock_picking(orm.Model):
@@ -94,6 +104,24 @@ class stock_picking(orm.Model):
             'operating.unit', string='Requesting Operating Unit',
             required=True),
     }
+
+    _defaults = {
+        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
+            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+    }
+
+    def _check_company_operating_unit(self, cr, uid, ids, context=None):
+        for sp in self.browse(cr, uid, ids, context=context):
+            if sp.company_id and sp.operating_unit_id and \
+                    sp.company_id != sp.operating_unit_id.company_id:
+                return False
+        return True
+
+    _constraints = [
+        (_check_company_operating_unit,
+         'The Company in the Stock Picking and in the Operating '
+         'Unit must be the same.', ['operating_unit_id',
+                                    'company_id'])]
 
     def _prepare_invoice(self, cr, uid, picking, partner, inv_type, journal_id,
                          context=None):

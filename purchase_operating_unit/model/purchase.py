@@ -45,10 +45,21 @@ class purchase_order(orm.Model):
                 return False
         return True
 
+    def _check_company_operating_unit(self, cr, uid, ids, context=None):
+        for po in self.browse(cr, uid, ids, context=context):
+            if po.company_id and \
+                    po.company_id != po.operating_unit_id.company_id:
+                return False
+        return True
+
     _constraints = [
         (_check_warehouse_operating_unit,
          'The Quotation / Purchase Order and the Warehouse must belong to '
-         'the same Operating Unit.', ['operating_unit_id', 'warehouse_id'])]
+         'the same Operating Unit.', ['operating_unit_id', 'warehouse_id']),
+        (_check_company_operating_unit,
+         'The Company in the Purchase Order and in the Operating '
+         'Unit must be the same.', ['operating_unit_id',
+                                    'company_id'])]
 
     def action_invoice_create(self, cr, uid, ids, context=None):
         if context is None:
