@@ -33,10 +33,8 @@ class stock_move(orm.Model):
         debit_line_vals = res[0][2]
         credit_line_vals = res[1][2]
 
-        debit_line_vals['operating_unit_id'] = move.operating_unit_dest_id.id
-        credit_line_vals['operating_unit_id'] = move.operating_unit_id.id
-
         if (
+            move.operating_unit_id and move.operating_unit_dest_id and
             move.operating_unit_id != move.operating_unit_dest_id and
             debit_line_vals['account_id'] != credit_line_vals['account_id']
         ):
@@ -45,6 +43,11 @@ class stock_move(orm.Model):
                                    'separate source and destination accounts '
                                    'and different source and destination '
                                    'operating units.'))
+
+        debit_line_vals['operating_unit_id'] = \
+            move.operating_unit_dest_id.id or move.operating_unit_id.id
+        credit_line_vals['operating_unit_id'] = \
+            move.operating_unit_id.id or move.operating_unit_dest_id.id
 
         return [(0, 0, debit_line_vals), (0, 0, credit_line_vals)]
 

@@ -22,12 +22,12 @@ from openerp.osv import orm, fields
 from openerp.tools.translate import _
 
 
-class account_move_line(orm.Model):
+class AccountMoveLine(orm.Model):
     _inherit = "account.move.line"
 
     def _query_get(self, cr, uid, obj='l', context=None):
-        query = super(account_move_line, self)._query_get(cr, uid, obj=obj,
-                                                          context=context)
+        query = super(AccountMoveLine, self)._query_get(cr, uid, obj=obj,
+                                                        context=context)
         if context.get('operating_unit_ids', False):
             operating_unit_ids = context.get('operating_unit_ids')
             query += 'AND '+obj+'.operating_unit_id in (%s)' % (
@@ -57,8 +57,19 @@ class account_move_line(orm.Model):
                                               'company_id'])
     ]
 
+    def search(self, cr, uid, args, offset=0, limit=None, order=None,
+               context=None, count=False):
+        if context is None:
+            context = {}
+        if context.get('operating_unit_id', False):
+            args.append(['operating_unit_id', '=', context['operating_unit_id']])
+        return super(AccountMoveLine, self).search(cr, uid, args, offset,
+                                                   limit, order,
+                                                   context=context,
+                                                   count=count)
 
-class account_move(orm.Model):
+
+class AccountMove(orm.Model):
     _inherit = "account.move"
 
     def post(self, cr, uid, ids, context=None):
@@ -119,8 +130,7 @@ class account_move(orm.Model):
                     self.write(cr, uid, [move.id],
                                {'line_id': [(4, lid)]}, context=context)
 
-        return super(account_move, self).post(cr, uid, ids,
-                                              context=context)
+        return super(AccountMove, self).post(cr, uid, ids, context=context)
 
     def _check_inter_ou_same_account(self, cr, uid, ids):
         for move in self.browse(cr, uid, ids):

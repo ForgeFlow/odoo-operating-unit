@@ -18,12 +18,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from openerp.osv import orm, fields
 
-from openerp.osv import fields, orm
 
+class MisReportInstance(orm.Model):
 
-class account_common_report(orm.TransientModel):
-    _inherit = "account.common.report"
+    _inherit = 'mis.report.instance'
 
     _columns = {
         'operating_unit_ids': fields.many2many('operating.unit',
@@ -31,13 +31,19 @@ class account_common_report(orm.TransientModel):
                                                required=False),
     }
 
-    def _build_contexts(self, cr, uid, ids, data, context=None):
-        result = super(account_common_report, self)._build_contexts(
-            cr, uid, ids, data, context=context)
-        data2 = {}
-        data2['form'] = self.read(cr, uid, ids, ['operating_unit_ids'],
-                                  context=context)[0]
-        result['operating_unit_ids'] = \
-            'operating_unit_ids' in data2['form'] \
-            and data2['form']['operating_unit_ids'] or False
-        return result
+
+class MisReportInstancePeriod(orm.Model):
+
+    _inherit = 'mis.report.instance.period'
+
+    def _get_additional_move_line_filter(self, cr, uid, _id, context=None):
+        aml_domain = super(
+            MisReportInstancePeriod, self)._get_additional_move_line_filter(
+            cr, uid, _id, context=context)
+        this = self.browse(cr, uid, _id, context=context)
+        if this.report_instance_id.operating_unit_ids:
+            operating_unit_ids = [op.id for op in
+                                  this.report_instance_id.operating_unit_ids]
+            aml_domain.append(('operating_unit_id', 'in',
+                               tuple(operating_unit_ids)))
+        return aml_domain

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Copyright (C) 2015 Eficent (<http://www.eficent.com/>)
-#              <contact@eficent.com>
+#    Author: Jordi Ballester (Eficent)
+#    Copyright 2015 Eficent
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,24 +19,25 @@
 #
 ##############################################################################
 
-from openerp.osv import fields, orm
-
-
-class res_users(orm.Model):
-
-    _inherit = 'res.users'
-
-    _columns = {
-        'operating_unit_ids': fields.many2many(
-            'operating.unit', 'operating_unit_users_rel',
-            'user_id', 'poid',
-            'Operating Units'),
-        'default_operating_unit_id': fields.many2one(
-            'operating.unit', 'Default Operating Unit')
-    }
-
-    def operating_unit_default_get(self, cr, uid, uid2, context=None):
-        if not uid2:
-            uid2 = uid
-        user = self.pool.get('res.users').browse(cr, uid, uid2, context)
-        return user.default_operating_unit_id.id or False
+{
+    'name': 'Vouchers with Operating Units',
+    'version': '1.0',
+    'category': 'Generic Modules/Sales & Purchases',
+    'description': '''
+Vouchers with Operating Units
+=============================
+This module introduces the following features:
+- Adds the OU as a required field in the payment vouchers
+- The voucher can only select AR o AP items for payment that belong to the
+same OU
+- Security rules are defined to ensure that users can only display the
+Vouchers in which they are allowed access to.
+''',
+    'author': "Eficent",
+    'website': 'http://www.eficent.com',
+    'depends': ['account_voucher', 'operating_unit'],
+    'data': [
+        'views/account_voucher.xml',
+    ],
+    'installable': True,
+}

@@ -19,32 +19,33 @@
 #
 ##############################################################################
 from openerp.osv import fields, orm
-from openerp.tools.translate import _
 
 
-class MrpProduction(orm.Model):
+class OperatingUnit(orm.Model):
 
-    _inherit = 'mrp.production'
+    _name = 'operating.unit'
+    _description = 'Operating Unit'
 
     _columns = {
-        'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit', required=True),
+        'name': fields.char('Name', size=256, required=True),
+        'code': fields.char('Code', size=32, required=True),
+        'active': fields.boolean('Active'),
+        'company_id': fields.many2one('res.company', 'Company', required=True),
+        'partner_id': fields.many2one('res.partner', 'Partner', required=True),
     }
 
     _defaults = {
-        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
-            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+        'active': True,
+        'company_id': lambda s, cr, uid,
+        c: s.pool.get('res.company')._company_default_get(
+            cr, uid, 'account.account', context=c),
     }
 
-    def _check_company_operating_unit(self, cr, uid, ids, context=None):
-        for pr in self.browse(cr, uid, ids, context=context):
-            if pr.company_id and \
-                    pr.company_id != pr.operating_unit_id.company_id:
-                return False
-        return True
-
-    _constraints = [
-        (_check_company_operating_unit,
-         'The Company in the Manufacturing Order and in the Operating '
-         'Unit must be the same.', ['operating_unit_id',
-                                    'company_id'])]
+    _sql_constraints = [
+        ('code_company_uniq', 'unique (code,company_id)',
+         'The code of the operating unit must '
+         'be unique per company !'),
+        ('name_company_uniq', 'unique (name,company_id)',
+         'The name of the operating unit must '
+         'be unique per company !')
+    ]

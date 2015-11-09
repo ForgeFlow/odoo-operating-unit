@@ -42,9 +42,9 @@ class account_invoice(orm.Model):
     def _check_company_operating_unit(self, cr, uid, ids, context=None):
         for pr in self.browse(cr, uid, ids, context=context):
             if (
-                pr.company_id
-                and pr.operating_unit_id
-                and pr.company_id != pr.operating_unit_id.company_id
+                pr.company_id and
+                pr.operating_unit_id and
+                pr.company_id != pr.operating_unit_id.company_id
             ):
                 return False
         return True

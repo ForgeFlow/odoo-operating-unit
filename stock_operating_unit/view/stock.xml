@@ -135,10 +135,10 @@
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_internal_search"/>
             <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="operating_unit_id" widget="selection"/>
+                </field>
                 <xpath expr="//filter[@string='Origin']" position="after">
-                    <field name="product_id" position="after">
-                        <field name="operating_unit_id" widget="selection"/>
-                    </field>
                     <filter string="Operating Unit"
                             icon="terp-gtk-jump-to-rtl" domain="[]"
                             context="{'group_by':'operating_unit_id'}"/>

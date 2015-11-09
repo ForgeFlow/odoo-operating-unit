@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Copyright (C) 2015 Eficent (<http://www.eficent.com/>)
-#              <contact@eficent.com>
+#    Author: Jordi Ballester (Eficent)
+#    Copyright 2015 Eficent
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,3 +18,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{'name': """Common Webkit headers and CSS for reports related to operating
+units (sale, purchase, invoices, ...)""",
+ 'version': '1.0',
+ 'category': 'Reports/Webkit',
+ 'description': """
+  Contains Common data headers and CSS to design standard reports, used by:
+   - sale_order_wekbit,
+   - purchase_order_webkit,
+   - ...
+""",
+ 'author': "Eficent,Odoo Community Association (OCA)",
+ 'website': 'http://www.eficent.com',
+ 'depends': ['operating_unit', 'report_webkit'],
+ 'init_xml': [],
+ 'update_xml': ['base_headers_data.xml'],
+ 'demo_xml': [],
+ 'test': [],
+ 'installable': True,
+ 'active': False,
+ }

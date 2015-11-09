@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Copyright (C) 2015 Eficent (<http://www.eficent.com/>)
+#    Copyright (C) 2014 Eficent (<http://www.eficent.com/>)
 #              <contact@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,3 +18,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from . import purchase_request_line_make_purchase_order

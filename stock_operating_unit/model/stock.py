@@ -83,6 +83,17 @@ class stock_location(orm.Model):
                 return False
         return True
 
+    def _check_parent_operating_unit(self, cr, uid, ids, context=None):
+        for sl in self.browse(cr, uid, ids, context=context):
+            if (
+                sl.location_id and
+                sl.location_id.usage == 'internal' and
+                sl.operating_unit_id and
+                sl.operating_unit_id != sl.location_id.operating_unit_id
+            ):
+                return False
+        return True
+
     _constraints = [
         (_check_warehouse_operating_unit,
          'This location is assigned to a warehouse that belongs to a '
@@ -93,7 +104,10 @@ class stock_location(orm.Model):
         (_check_company_operating_unit,
          'The Company in the Stock Location and in the Operating '
          'Unit must be the same.', ['operating_unit_id',
-                                    'company_id'])]
+                                    'company_id']),
+        (_check_parent_operating_unit,
+         'The Parent Stock Location must belong to the same Operating Unit.',
+         ['operating_unit_id', 'location_id'])]
 
 
 class stock_picking(orm.Model):
@@ -117,11 +131,33 @@ class stock_picking(orm.Model):
                 return False
         return True
 
+    def _check_stock_move_operating_unit(self, cr, uid, ids, context=None):
+        for sp in self.browse(cr, uid, ids, context=context):
+            if not sp.operating_unit_id:
+                return True
+            for sm in sp.move_lines:
+                if (
+                    sm.location_id and
+                    sm.location_id.operating_unit_id and
+                    sp.operating_unit_id != sm.location_id.operating_unit_id
+                ) and (
+                    sm.location_dest_id and
+                    sm.location_dest_id.operating_unit_id and
+                    sp.operating_unit_id != sm.location_dest_id.operating_unit_id
+                ):
+                    return False
+        return True
+
     _constraints = [
         (_check_company_operating_unit,
          'The Company in the Stock Picking and in the Operating '
          'Unit must be the same.', ['operating_unit_id',
-                                    'company_id'])]
+                                    'company_id']),
+        (_check_stock_move_operating_unit,
+         'The Stock moves must be related to a location (source or '
+         'destination) that belongs to the requesting Operating Unit.',
+         ['operating_unit_id', 'move_lines'])
+    ]
 
     def _prepare_invoice(self, cr, uid, picking, partner, inv_type, journal_id,
                          context=None):

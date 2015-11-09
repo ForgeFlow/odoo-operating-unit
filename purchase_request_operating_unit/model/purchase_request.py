@@ -22,9 +22,9 @@ from openerp.osv import fields, orm
 from openerp.tools.translate import _
 
 
-class MrpProduction(orm.Model):
+class PurchaseRequest(orm.Model):
 
-    _inherit = 'mrp.production'
+    _inherit = 'purchase.request'
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
@@ -36,6 +36,23 @@ class MrpProduction(orm.Model):
             'res.users').operating_unit_default_get(cr, uid, uid, context=c),
     }
 
+    def onchange_operating_unit_id(self, cr, uid, ids, operating_unit_id,
+                                   context=None):
+        # Obtain the default warehouse for the new operating unit
+        if context is None:
+            context = {}
+        res = {'value': {}}
+        warehouse_obj = self.pool['stock.warehouse']
+
+        if operating_unit_id:
+            warehouse_ids = warehouse_obj.search(cr, uid,
+                                                 [('operating_unit_id', '=',
+                                                   operating_unit_id)],
+                                                 limit=1, context=context)
+            if warehouse_ids:
+                res['value']['warehouse_id'] = warehouse_ids[0]
+        return res
+
     def _check_company_operating_unit(self, cr, uid, ids, context=None):
         for pr in self.browse(cr, uid, ids, context=context):
             if pr.company_id and \
@@ -45,6 +62,27 @@ class MrpProduction(orm.Model):
 
     _constraints = [
         (_check_company_operating_unit,
-         'The Company in the Manufacturing Order and in the Operating '
+         'The Company in the Purchase Request and in the Operating '
          'Unit must be the same.', ['operating_unit_id',
                                     'company_id'])]
+
+
+class PurchaseRequestLine(orm.Model):
+    _inherit = 'purchase.request.line'
+
+    def _get_lines_from_request(self, cr, uid, ids, context=None):
+        lines = []
+        for request in self.pool['purchase.request'].browse(
+                cr, uid, ids, context=context):
+            for line in request.line_ids:
+                lines.append(line.id)
+        return list(set(lines))
+
+    _columns = {
+        'operating_unit_id': fields.related(
+            'request_id', 'operating_unit_id', type='many2one',
+            relation='operating.unit', string='Operating Unit',
+            readonly=True,
+            store={'purchase.request': (_get_lines_from_request,
+                                        None, 20)})
+    }

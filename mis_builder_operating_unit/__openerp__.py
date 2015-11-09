@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Copyright (C) 2015 Eficent (<http://www.eficent.com/>)
-#              <contact@eficent.com>
+#    Author: Jordi Ballester (Eficent)
+#    Copyright 2015 Eficent
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,3 +18,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
+{
+    'name': 'MIS Builder with Operating Unit',
+    'version': '1.0',
+    'category': 'Reporting',
+    'description': '''
+MIS Builder with Operating Unit
+============================
+This module introduces the operating unit to MIS Builder reports
+
+''',
+    'author': "Eficent,Odoo Community Association (OCA)",
+    'website': 'http://www.eficent.com',
+    'depends': ['mis_builder', 'account_operating_unit'],
+    'data': [
+        'view/mis_builder.xml',
+        'security/mis_builder_security.xml'
+    ],
+    'installable': True,
+}
