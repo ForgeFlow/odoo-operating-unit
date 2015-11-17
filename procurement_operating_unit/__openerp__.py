@@ -36,7 +36,6 @@ It implements user's security rules.
     """,
     "init_xml": [],
     "update_xml": [
-        "view/procurement_order.xml",
         "security/procurement_security.xml",
     ],
     'demo_xml': [

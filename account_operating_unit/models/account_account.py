@@ -18,5 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import models
-from . import wizard
+from openerp.osv import orm, fields
+
+
+class AccountAccount(orm.Model):
+    _inherit = "account.account"
+
+    _columns = {
+        'operating_unit_id': fields.many2one('operating.unit',
+                                             'Default Operating Unit',
+                                             required=False),
+    }

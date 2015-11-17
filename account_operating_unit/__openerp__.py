@@ -21,7 +21,7 @@
 
 {
     'name': 'Accounting with Operating Units',
-    'version': '1.0',
+    'version': '1.0.1',
     'category': 'Generic Modules/Sales & Purchases',
     'description': '''
 Accounting with Operating Units
@@ -37,16 +37,23 @@ making each OU self-balancing.
 - Introduces checks that prevent users from entering cross-operating unit
 journal entries using different accounts.
 - The account financial reports include the option to filter by OU.
-
+- Adds the Operating Unit in the invoice
+- Implements security rules in the invoice
 ''',
     'author': "Eficent,Odoo Community Association (OCA)",
     'website': 'http://www.eficent.com',
     'depends': ['account', 'operating_unit'],
     'data': [
-        'view/account.xml',
-        'view/company.xml',
+        'views/account_move_view.xml',
+        'views/account_move_view.xml',
+        'views/company_view.xml',
+        'views/invoice_view.xml',
         'wizard/account_report_common_view.xml',
         'wizard/account_financial_report_view.xml',
+        'security/invoice_security.xml'
+    ],
+    'demo': [
+        'demo/account_minimal.xml'
     ],
     'installable': True,
 }

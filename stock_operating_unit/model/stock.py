@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# Authors: Leonardo Pistone, Jordi Ballester Alomar
-# Copyright 2014 Camptocamp SA (http://www.camptocamp.com)
+# Authors: Jordi Ballester Alomar
 # Copyright 2015 Eficent (http://www.eficent.com)
 #
 # This program is free software: you can redistribute it and/or modify
@@ -28,11 +27,6 @@ class stock_warehouse(orm.Model):
                                              required=True),
     }
 
-    _defaults = {
-        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
-            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
-    }
-
 
 class stock_location(orm.Model):
     _inherit = 'stock.location'
@@ -41,11 +35,6 @@ class stock_location(orm.Model):
         'operating_unit_id': fields.many2one('operating.unit',
                                              'Operating Unit',
                                              required=False),
-    }
-
-    _defaults = {
-        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
-            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
     }
 
     def _check_warehouse_operating_unit(self, cr, uid, ids, context=None):
@@ -122,6 +111,7 @@ class stock_picking(orm.Model):
     _defaults = {
         'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
             'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+
     }
 
     def _check_company_operating_unit(self, cr, uid, ids, context=None):

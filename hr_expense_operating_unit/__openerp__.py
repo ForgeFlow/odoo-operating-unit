@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Author: Jordi Ballester (Eficent)
-#    Copyright 2015 Eficent
+#    Copyright (C) 2014 Eficent (<http://www.eficent.com/>)
+#              Jordi Ballester Alomar <jordi.ballester@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,5 +18,26 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import models
-from . import wizard
+
+
+{
+    "name": "HR Expense Operating Unit",
+    "version": "1.0",
+    "license": 'AGPL-3',
+    "author": "Eficent",
+    "category": "Generic Modules/Human Resources",
+    "depends": ["hr_expense", "account_operating_unit"],
+    "description": """
+HR Expense Operating Unit
+=========================
+Adds a the operating unit to the HR Expense.
+    """,
+    "data": [
+        "views/hr_expense_view.xml",
+        "security/hr_expense_security.xml"
+    ],
+    'demo': [],
+    'test':[
+    ],
+    'installable': True,
+}

@@ -25,7 +25,7 @@
     "author": "Eficent",
     "website": "www.eficent.com",
     "category": "Purchase Management",
-    "depends": ["purchase_request_to_rfq"],
+    "depends": ["purchase_request_to_rfq", "purchase_request_operating_unit"],
     "description": """
 Purchase Request to RFQ with Operating Units
 ============================================

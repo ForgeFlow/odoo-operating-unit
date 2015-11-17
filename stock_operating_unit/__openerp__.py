@@ -30,10 +30,14 @@ Adds the requesting operating unit to stock pickings.
 Implements user's security access rules.
 
 """,
-    'depends': ['stock', 'operating_unit'],
+    'depends': ['stock', 'account_operating_unit'],
     'data': [
         'view/stock.xml',
         'security/stock_security.xml',
+        'data/stock_data.xml'
+    ],
+    'demo': [
+        'demo/stock_demo.xml'
     ],
     'installable': True,
 }

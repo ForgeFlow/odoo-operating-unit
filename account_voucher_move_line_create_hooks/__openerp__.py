@@ -18,5 +18,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import models
-from . import wizard
+
+{
+    'name': 'Account Vouchers Move Line Create Hookd',
+    'version': '1.0',
+    'category': 'Generic Modules/Sales & Purchases',
+    'description': '''
+Account Vouchers Move Line Create Hooks
+=======================================
+This module reimplements the method that creates the account moves from the
+voucher, with the same basic result as in the standard case.
+
+Hooks are provided for extra modules can influence the data that is passed
+to the account moves.
+
+''',
+    'author': "Eficent",
+    'website': 'http://www.eficent.com',
+    'depends': ['account_voucher'],
+    'data': [],
+    'installable': True,
+}

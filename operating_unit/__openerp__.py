@@ -51,10 +51,9 @@ rules. Other modules extend the standard Odoo apps with the OU.
         "data/operating_unit_data.xml",
     ],
     'demo_xml': [
-
+        "demo/operating_unit_demo.xml"
     ],
-    'test':[
-    ],
+    'test':[],
     'installable': True,
     'active': False,
     'certificate': '',

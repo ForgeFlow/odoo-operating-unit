@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Author: Jordi Ballester (Eficent)
-#    Copyright 2015 Eficent
+#    Copyright (C) 2015 Eficent (<http://www.eficent.com/>)
+#              <contact@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,5 +18,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import models
-from . import wizard
+from openerp.osv import fields, orm
+
+
+class ProcurementOrder(orm.Model):
+
+    _inherit = 'procurement.order'
+
+    def _check_purchase_order_operating_unit(self, cr, uid, ids, context=None):
+        for pr in self.browse(cr, uid, ids, context=context):
+            if pr.purchase_id and \
+                    pr.purchase_id.operating_unit_id != \
+                    pr.location_id.operating_unit_id:
+                return False
+        return True
+
+    _constraints = [
+        (_check_purchase_order_operating_unit,
+         'The Quotation / Purchase Order and the Procurement Order must '
+         'belong to the same Operating Unit.', ['operating_unit_id',
+                                                'purchase_id'])]

@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Copyright (C) 2014 Eficent (<http://www.eficent.com/>)
-#               <contact@eficent.com>
+#               <jordi.ballester@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,37 +18,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-{
-    "name": "Operating Unit in Purchase Orders",
-    "version": "1.0",
-    "author": "Eficent",
-    "website": "http://www.eficent.com",
-    "category": "Purchase Management",
-    "depends": ["purchase", "stock_operating_unit",
-                "procurement_operating_unit"],
-    "description": """
-Operating Unit in Purchase Orders
-=================================
-This module introduces the operating unit to the purchase order.
-The operating unit is copied to the invoice.
-The operating unit is copied to the stock picking.
-
-It implements user's security rules.
+from openerp.osv import fields, orm
 
 
-    """,
-    "data": [
-        "views/purchase_order_view.xml",
-        "views/purchase_order_line_view.xml",
-        "security/purchase_security.xml",
-    ],
-    'demo': [
-        'demo/purchase_order_demo.xml'
-    ],
-    'test':[
-    ],
-    'installable': True,
-    'active': False,
-    'certificate': '',
-}
+class HrPayslip(orm.Model):
+
+    _inherit = 'hr.payslip'
+
+    def write(self, cr, uid, ids, vals, context=None):
+        if not context:
+            context = {}
+        move_obj = self.pool['account.move']
+        res = super(HrPayslip, self).write(cr, uid, ids, vals, context=context)
+        if 'move_id' in vals and vals['move_id']:
+            for slip in self.browse(cr, uid, ids, context=context):
+                if slip.contract_id and slip.contract_id.operating_unit_id:
+                    move_obj.write(
+                        cr, uid, [slip.move_id.id], {
+                            'operating_unit_id':
+                            slip.contract_id.operating_unit_id.id},
+                        context=context)
+        return res

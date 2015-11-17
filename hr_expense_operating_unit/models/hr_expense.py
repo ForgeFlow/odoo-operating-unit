@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Author: Jordi Ballester (Eficent)
-#    Copyright 2015 Eficent
+#    Copyright (C) 2014 Eficent (<http://www.eficent.com/>)
+#               <jordi.ballester@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,5 +18,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import models
-from . import wizard
+from openerp.osv import fields, orm
+
+
+class HrExpenseExpense(orm.Model):
+
+    _inherit = 'hr.expense.expense'
+
+    _columns = {
+        'operating_unit_id': fields.many2one('operating.unit',
+                                             'Operating Unit', required=True),
+    }
+
+    def account_move_get(self, cr, uid, expense_id, context=None):
+        res = super(HrExpenseExpense, self).account_move_get(cr, uid,
+                                                             expense_id,
+                                                             context=context)
+        expense = self.browse(cr, uid, expense_id, context=context)
+        if expense.operating_unit_id:
+            res['operating_unit_id'] = expense.operating_unit_id.id
+        return res

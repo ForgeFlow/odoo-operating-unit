@@ -27,64 +27,95 @@ class AccountVoucher(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit'),
+                                             'Operating Unit', required=False),
+        'writeoff_operating_unit_id': fields.many2one(
+            'operating.unit', 'Write-off Operating Unit', required=False),
     }
 
-    _defaults = {
-        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
-            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
-    }
+    def first_move_line_get(self, cr, uid, voucher_id, move_id,
+                            company_currency, current_currency, context=None):
+        res = super(AccountVoucher, self).first_move_line_get(
+            cr, uid, voucher_id, move_id, company_currency, current_currency,
+            context=context)
+        voucher = self.pool['account.voucher'].browse(cr, uid, voucher_id,
+                                                      context)
+        if voucher.operating_unit_id:
+            res['operating_unit_id'] = voucher.operating_unit_id.id
 
-    def _check_company_operating_unit(self, cr, uid, ids, context=None):
-        for av in self.browse(cr, uid, ids, context=context):
-            if (
-                av.company_id and
-                av.operating_unit_id and
-                av.company_id != av.operating_unit_id.company_id
-            ):
-                return False
-        return True
+        else:
+            if not voucher.account_id:
+                orm.except_orm(_('Error!',
+                                 _('Account %s does not have a '
+                                   'default operating unit.') %
+                                 voucher.account_id.code))
+            else:
+                res['operating_unit_id'] = \
+                    voucher.account_id.operating_unit_id.id
+        return res
 
-    _constraints = [
-        (_check_company_operating_unit,
-         'The Company in the Voucher and in the Operating '
-         'Unit must be the same.', ['operating_unit_id',
-                                    'company_id'])]
+    def _voucher_move_line_prepare(self, cr, uid, voucher_id, line_total,
+                                   move_id, company_currency, current_currency,
+                                   voucher_line_id, context=None):
+        res = super(AccountVoucher, self)._voucher_move_line_prepare(
+            cr, uid, voucher_id, line_total, move_id, company_currency,
+            current_currency, voucher_line_id, context=context)
+        line = self.pool['account.voucher.line'].browse(cr, uid,
+                                                        voucher_line_id,
+                                                        context=context)
+        if line.voucher_id.operating_unit_id:
+            res['operating_unit_id'] = line.voucher_id.operating_unit_id.id
+        elif line.move_line_id and line.move_line_id.operating_unit_id:
+            res['operating_unit_id'] = line.move_line_id.operating_unit_id.id
+        return res
 
-    def recompute_voucher_lines(self, cr, uid, ids, partner_id, journal_id, price, currency_id, ttype, date, context=None):
-        if not context:
-            context = {}
-        for voucher in self.browse(cr, uid, ids, context=context):
-            if voucher.operating_unit_id:
-                context.add()
-            res = super(AccountVoucher, self).recompute_voucher_lines(
-                cr, uid, [voucher.id], partner_id, journal_id, price,
-                currency_id, ttype,
-                date, context=context)
+    def _voucher_move_line_foreign_currency_prepare(
+            self, cr, uid, voucher_id, line_total, move_id,
+            company_currency, current_currency, voucher_line_id,
+            foreign_currency_diff, context=None):
 
+        res = super(AccountVoucher, self)._voucher_move_line_prepare(
+            cr, uid, voucher_id, line_total, move_id, company_currency,
+            current_currency, voucher_line_id, foreign_currency_diff,
+            context=context)
+        line = self.pool['account.voucher.line'].browse(cr, uid,
+                                                        voucher_line_id,
+                                                        context=context)
+        if line.move_line_id and line.move_line_id.operating_unit_id:
+            res['operating_unit_id'] = line.move_line_id.operating_unit_id.id
+        return res
 
-class AccountVoucherLine(orm.Model):
-    _inherit = 'account.voucher.line'
+    def writeoff_move_line_get(self, cr, uid, voucher_id,
+                               line_total, move_id, name,
+                               company_currency, current_currency,
+                               context=None):
+        res = super(AccountVoucher, self).writeoff_move_line_get(
+            cr, uid, voucher_id, line_total, move_id, name, company_currency,
+            current_currency, context=context)
+        if res:
+            voucher = self.pool['account.voucher'].browse(cr, uid,
+                                                          voucher_id, context)
+            if (voucher.payment_option == 'with_writeoff' or
+                    voucher.partner_id):
+                if not voucher.writeoff_operating_unit_id:
+                    orm.except_orm(_('Error!',
+                                   _('Please indicate a write-off Operating '
+                                     'Unit.')))
+                else:
+                    res['operating_unit_id'] = \
+                        voucher.writeoff_operating_unit_id.id
+            else:
+                if not voucher.writeoff_operating_unit_id:
+                    if not voucher.account_id.operating_unit_id:
+                        orm.except_orm(_('Error!',
+                                       _('Please indicate a write-off '
+                                         'Operating Unit or a default '
+                                         'Operating Unit for account %s') %
+                                         voucher.account_id.code))
+                    else:
+                        res['operating_unit_id'] = \
+                                voucher.account_id.operating_unit_id.id
+                else:
+                        res['operating_unit_id'] = \
+                                voucher.writeoff_operating_unit_id.id
 
-    _columns = {
-        'operating_unit_id': fields.related(
-            'voucher_id', 'operating_unit_id', type='many2one',
-            relation='operating.unit', string='Operating Unit',
-            readonly=True),
-    }
-
-    def _check_move_line_operating_unit(self, cr, uid, ids, context=None):
-        for avl in self.browse(cr, uid, ids, context=context):
-            if (
-                avl.operating_unit_id and
-                avl.move_line_id and
-                avl.operating_unit_id != avl.move_line_id.operating_unit_id
-            ):
-                return False
-        return True
-
-    _constraints = [
-        (_check_move_line_operating_unit,
-         'The Company in the Voucher and in the Operating '
-         'Unit must be the same.', ['operating_unit_id',
-                                    'company_id'])]
+        return res
