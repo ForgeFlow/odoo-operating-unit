@@ -26,7 +26,7 @@
     "website": "http://www.eficent.com",
     "category": "Purchase Management",
     "depends": ["sale_stock",
-                "sale_operating_unit"
+                "sale_operating_unit",
                 "stock_operating_unit"],
     "description": """
 Operating Unit in Sales Stock
