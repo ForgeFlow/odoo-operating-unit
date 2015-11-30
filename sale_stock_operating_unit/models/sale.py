@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Author: Jordi Ballester (Eficent)
-#    Copyright 2015 Eficent
+#    Copyright (C) 2015 Eficent (<http://www.eficent.com/>)
+#              <contact@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,19 +18,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.osv import orm, fields
+from openerp.osv import fields, orm
+from openerp.tools.translate import _
 
 
-class AccountAccount(orm.Model):
-    _inherit = "account.account"
+class SaleShop(orm.Model):
+    _inherit = 'sale.shop'
 
-    _columns = {
-        'operating_unit_id': fields.many2one('operating.unit',
-                                             'Default Operating Unit',
-                                             required=False),
-    }
+    def _check_warehouse_operating_unit(self, cr, uid, ids, context=None):
+        for r in self.browse(cr, uid, ids, context=context):
+            if r.warehouse_id and \
+                    r.warehouse_id.operating_unit_id != r.operating_unit_id:
+                return False
+        return True
 
-    _defaults = {
-        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
-            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
-    }
+    _constraints = [
+        (_check_warehouse_operating_unit,
+         'The Operating Unit in the Warehouse must be the same as in the '
+         'Sale Shop.', ['operating_unit_id', 'warehouse_id'])]

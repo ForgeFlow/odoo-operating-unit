@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+
+        <!-- Resource: sale.shop -->
+        <record id="sale.sale_shop_1" model="sale.shop">
+            <field name="operating_unit_id"
+                   ref="operating_unit.main_operating_unit"/>
+        </record>
+
+    </data>
+</openerp>

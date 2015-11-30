@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Copyright (C) 2015 Eficent (<http://www.eficent.com/>)
-#              <contact@eficent.com>
+#               <contact@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,3 +18,33 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
+{
+    "name": "Operating Unit in Sales Stock",
+    "version": "1.0",
+    "author": "Eficent",
+    "website": "http://www.eficent.com",
+    "category": "Purchase Management",
+    "depends": ["sale_stock",
+                "sale_operating_unit"
+                "stock_operating_unit"],
+    "description": """
+Operating Unit in Sales Stock
+=============================
+This module prevents a user from selecting a Warehouse in the Sale Shop
+that does not belong to the same operating unit.
+
+
+Credits
+=======
+
+Contributors
+------------
+
+* Jordi Ballester <jordi.ballester@eficent.com>
+
+    """,
+    "data": [],
+    'installable': True,
+    'active': False,
+}

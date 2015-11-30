@@ -29,3 +29,8 @@ class HrContract(orm.Model):
         'operating_unit_id': fields.many2one('operating.unit',
                                              'Operating Unit', required=True),
     }
+
+    _defaults = {
+        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
+            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+    }

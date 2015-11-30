@@ -55,13 +55,18 @@ class account_invoice(orm.Model):
          'Unit must be the same.', ['operating_unit_id',
                                     'company_id'])]
 
+    _defaults = {
+        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
+            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+    }
+
 
 class account_invoice_line(orm.Model):
     _inherit = 'account.invoice.line'
 
     _columns = {
         'operating_unit_id': fields.related(
-            'order_id', 'operating_unit_id', type='many2one',
+            'invoice_id', 'operating_unit_id', type='many2one',
             relation='operating.unit', string='Operating Unit',
-            readonly=True),
+            store=True, readonly=True),
     }

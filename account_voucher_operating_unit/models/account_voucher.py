@@ -27,10 +27,58 @@ class AccountVoucher(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit', required=False),
+                                             'Operating Unit', required=True),
         'writeoff_operating_unit_id': fields.many2one(
             'operating.unit', 'Write-off Operating Unit', required=False),
     }
+
+    _defaults = {
+        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
+            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+    }
+
+    def _check_company_operating_unit(self, cr, uid, ids, context=None):
+        for r in self.browse(cr, uid, ids, context=context):
+            if r.company_id and r.operating_unit_id and \
+                            r.company_id != r.operating_unit_id.company_id:
+                return False
+        return True
+
+    def _check_journal_account_operating_unit(self, cr, uid, ids, context=None):
+        for r in self.browse(cr, uid, ids, context=context):
+            if r.type not in ('payment', 'receipt'):
+                return True
+            if (
+                r.journal_id and
+                r.journal_id.default_debit_account_id and
+                r.journal_id.default_debit_account_id.operating_unit_id and
+                r.journal_id.default_debit_account_id.operating_unit_id.id !=
+                    r.operating_unit_id.id
+            ):
+                return False
+
+            if (
+                r.journal_id and
+                r.journal_id.default_credit_account_id and
+                r.journal_id.default_credit_account_id.operating_unit_id and
+                r.journal_id.default_credit_account_id.operating_unit_id.id !=
+                    r.operating_unit_id.id
+            ):
+                return False
+
+        return True
+
+    _constraints = [
+        (_check_company_operating_unit,
+         'The Company in the Move Line and in the '
+         'Operating Unit must be the same.', ['operating_unit_id',
+                                              'company_id']),
+        (_check_journal_account_operating_unit,
+         'The Default Debit and Credit Accounts defined in the Journal '
+         'must have the same Operating Unit as the one indicated in the '
+         'payment or receipt.',
+         ['operating_unit_id', 'journal_id', 'type'])
+    ]
 
     def first_move_line_get(self, cr, uid, voucher_id, move_id,
                             company_currency, current_currency, context=None):
@@ -39,18 +87,27 @@ class AccountVoucher(orm.Model):
             context=context)
         voucher = self.pool['account.voucher'].browse(cr, uid, voucher_id,
                                                       context)
-        if voucher.operating_unit_id:
-            res['operating_unit_id'] = voucher.operating_unit_id.id
-
-        else:
-            if not voucher.account_id:
-                orm.except_orm(_('Error!',
-                                 _('Account %s does not have a '
-                                   'default operating unit.') %
-                                 voucher.account_id.code))
-            else:
+        if voucher.type in ('payment', 'receipt'):
+            if voucher.account_id.operating_unit_id:
                 res['operating_unit_id'] = \
                     voucher.account_id.operating_unit_id.id
+            else:
+                raise orm.except_orm(_('Error!'),
+                                     _('Account %s - %s does not have a '
+                                       'default operating unit. \n '
+                                       'Payment Method %s default Debit and '
+                                       'Credit accounts should have a '
+                                       'default Operating Unit.') %
+                                     (voucher.account_id.code,
+                                      voucher.account_id.name,
+                                      voucher.journal_id.name))
+        else:
+            if voucher.operating_unit_id:
+                res['operating_unit_id'] = voucher.operating_unit_id.id
+            else:
+                raise orm.except_orm(_('Error!'),
+                                     _('The Voucher must have an Operating '
+                                       'Unit.'))
         return res
 
     def _voucher_move_line_prepare(self, cr, uid, voucher_id, line_total,
@@ -62,7 +119,9 @@ class AccountVoucher(orm.Model):
         line = self.pool['account.voucher.line'].browse(cr, uid,
                                                         voucher_line_id,
                                                         context=context)
-        if line.voucher_id.operating_unit_id:
+
+        if line.voucher_id.type in ('sale', 'purchase') \
+                and line.voucher_id.operating_unit_id:
             res['operating_unit_id'] = line.voucher_id.operating_unit_id.id
         elif line.move_line_id and line.move_line_id.operating_unit_id:
             res['operating_unit_id'] = line.move_line_id.operating_unit_id.id
@@ -119,3 +178,13 @@ class AccountVoucher(orm.Model):
                                 voucher.writeoff_operating_unit_id.id
 
         return res
+
+
+class AccountVoucherLine(orm.Model):
+    _inherit = "account.voucher.line"
+
+    _columns = {
+        'operating_unit_id': fields.related(
+            'voucher_id', 'operating_unit_id', type='many2one',
+            relation='operating.unit', string='Operating Unit', readonly=True)
+    }

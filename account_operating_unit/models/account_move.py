@@ -43,6 +43,11 @@ class AccountMoveLine(orm.Model):
                                               required=False),
     }
 
+    _defaults = {
+        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
+            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+    }
+
     def _check_company_operating_unit(self, cr, uid, ids, context=None):
         for ml in self.browse(cr, uid, ids, context=context):
             if ml.company_id and ml.operating_unit_id and \

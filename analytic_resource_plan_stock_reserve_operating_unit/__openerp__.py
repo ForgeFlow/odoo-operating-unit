@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Author: Jordi Ballester (Eficent)
-#    Copyright 2015 Eficent
+#    Copyright (C) 2014 Eficent (<http://www.eficent.com/>)
+#              <contact@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,19 +18,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.osv import orm, fields
 
+{
+    "name": "Operating Units in Analytic Resource Plan Stock Reservations",
+    "version": "1.0",
+    "author": "Eficent",
+    "website": "www.eficent.com",
+    "category": "Generic Modules/Projects & Services",
+    "depends": ["analytic_resource_plan", "stock_reserve",
+                "stock_operating_unit"],
+    "description": """
+Operating Units in Analytic Resource Plan Stock Reservations
+============================================================
+    """,
+    "data": [],
+    'installable': True,
+    'active': False,
 
-class AccountAccount(orm.Model):
-    _inherit = "account.account"
-
-    _columns = {
-        'operating_unit_id': fields.many2one('operating.unit',
-                                             'Default Operating Unit',
-                                             required=False),
-    }
-
-    _defaults = {
-        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
-            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
-    }
+}

@@ -32,38 +32,9 @@
     "description": """
 Operating Unit in MRP
 =======================================
-This module was written to extend the MRP capabilities of Odoo.
-
-This module introduces the operating unit to the Manufacturing Order.
-
-Security rules are defined to ensure that users can only display the
-Manufacturing Orders in which they are allowed access to.
-
-
-Installation
-============
-
-No additional installation instructions are required.
-
-
-Configuration
-=============
-
-This module does not require any additional configuration.
-
-Usage
-=====
-
-At the time when a user creates a new manufacturing order the system
-proposes the user's default operating unit.
-
-The operating unit is a required field.
-
-
-Known issues / Roadmap
-======================
-
-No issue has been identified.
+This module implements global security rules on manufacturing orders so that
+a user can only read manufacturing orders where the location is linked to an
+operating unit that the user has access to.
 
 Credits
 =======
@@ -73,34 +44,10 @@ Contributors
 
 * Jordi Ballester <jordi.ballester@eficent.com>
 
-Maintainer
-----------
-
-.. image:: http://odoo-community.org/logo.png
-   :alt: Odoo Community Association
-   :target: http://odoo-community.org
-
-This module is maintained by the OCA.
-
-OCA, or the Odoo Community Association, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
-
-To contribute to this module, please visit http://odoo-community.org.
-
-
     """,
-    "init_xml": [],
-    "update_xml": [
-        "view/purchase_requisition.xml",
-        "security/purchase_security.xml",
-    ],
-    'demo_xml': [
-
-    ],
-    'test':[
+    "data": [
+        "security/mrp_security.xml",
     ],
     'installable': True,
     'active': False,
-    'certificate': '',
 }

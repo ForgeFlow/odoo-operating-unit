@@ -47,21 +47,9 @@ No additional installation instructions are required.
 Configuration
 =============
 
-This module does not require any additional configuration.
+Go to 'Settings / Technical / Actions / User-defined Defaults' and remove
+the default set for the Shop.
 
-Usage
-=====
-
-At the time when a user creates a new manufacturing order the system
-proposes the user's default operating unit.
-
-The operating unit is a required field.
-
-
-Known issues / Roadmap
-======================
-
-No issue has been identified.
 
 Credits
 =======
@@ -71,26 +59,12 @@ Contributors
 
 * Jordi Ballester <jordi.ballester@eficent.com>
 
-Maintainer
-----------
-
-.. image:: http://odoo-community.org/logo.png
-   :alt: Odoo Community Association
-   :target: http://odoo-community.org
-
-This module is maintained by the OCA.
-
-OCA, or the Odoo Community Association, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
-
-To contribute to this module, please visit http://odoo-community.org.
-
-
     """,
     "data": [
+        "data/sale_data.xml",
         "views/sale_view.xml",
         "security/sale_security.xml",
+
     ],
     'installable': True,
     'active': False,

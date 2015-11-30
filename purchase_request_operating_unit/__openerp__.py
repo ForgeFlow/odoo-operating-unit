@@ -20,22 +20,22 @@
 ##############################################################################
 
 {
-    "name": "Operating Unit in Purchase Requisitions",
+    "name": "Operating Unit in Purchase Requests",
     "version": "1.0",
     "author": "Eficent",
     "website": "http://www.eficent.com",
     "category": "Purchase Management",
-    "depends": ["purchase_requisition",
+    "depends": ["purchase_request",
                 "purchase_operating_unit"],
     "description": """
-Operating Unit in Purchase Requisitions
-=======================================
-This module was written to extend the Purchase Requsition capabilities of Odoo.
+Operating Unit in Purchase Requests
+===================================
+This module was written to extend the Purchase capabilities of Odoo.
 
-This module introduces the operating unit to the purchase requisition.
+This module introduces the operating unit to the purchase requests.
 
 Security rules are defined to ensure that users can only display the
-Purchase Requisitions in which they are allowed access to.
+Purchase Requests in which they are allowed access to.
 
 Installation
 ============
@@ -51,14 +51,10 @@ This module does not require any additional configuration.
 Usage
 =====
 
-At the time when a user creates a new purchase requisition the system
+At the time when a user creates a new purchase request the system
 proposes the user's default operating unit.
 
 The operating unit is a required field.
-
-When the user creates a purchase order (PO) from the purchase requisition the
-operating unit is copied to the PO.
-
 
 Known issues / Roadmap
 ======================

@@ -45,12 +45,12 @@ journal entries using different accounts.
     'depends': ['account', 'operating_unit'],
     'data': [
         'views/account_move_view.xml',
-        'views/account_move_view.xml',
+        'views/account_account_view.xml',
         'views/company_view.xml',
         'views/invoice_view.xml',
         'wizard/account_report_common_view.xml',
         'wizard/account_financial_report_view.xml',
-        'security/invoice_security.xml'
+        'security/account_security.xml'
     ],
     'demo': [
         'demo/account_minimal.xml'

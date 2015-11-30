@@ -30,6 +30,11 @@ class HrExpenseExpense(orm.Model):
                                              'Operating Unit', required=True),
     }
 
+    _defaults = {
+        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
+            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+    }
+
     def account_move_get(self, cr, uid, expense_id, context=None):
         res = super(HrExpenseExpense, self).account_move_get(cr, uid,
                                                              expense_id,

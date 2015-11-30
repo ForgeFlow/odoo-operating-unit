@@ -20,18 +20,18 @@
 ##############################################################################
 
 {
-    "name": "Operating Unit in Purchase Orders",
+    "name": "Operating Unit in Procurement Orders",
     "version": "1.0",
     "author": "Eficent",
     "website": "http://www.eficent.com",
-    "category": "Purchase Management",
+    "category": "Stock Management",
     "depends": ["procurement", "operating_unit", "stock_operating_unit"],
     "description": """
 Operating Unit in Procurement Orders
 ====================================
-This module introduces the operating unit to the procurement order.
-It implements user's security rules.
-
+This module implements global security rules on procurement orders so that
+a user can only read procurement orders where the location is linked to an
+operating unit that the user has access to.
 
     """,
     "init_xml": [],

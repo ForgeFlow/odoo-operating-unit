@@ -20,13 +20,15 @@ from openerp.osv import orm, fields
 from openerp.tools.translate import _
 
 
-class stock_move(orm.Model):
+class StockMove(orm.Model):
     _inherit = 'stock.move'
 
-    def _create_account_move_line(self, cr, uid, move, src_account_id, dest_account_id, reference_amount, reference_currency_id, context=None):
+    def _create_account_move_line(self, cr, uid, move, src_account_id,
+                                  dest_account_id, reference_amount,
+                                  reference_currency_id, context=None):
         if context is None:
             context = {}
-        res = super(stock_move, self)._create_account_move_line(
+        res = super(StockMove, self)._create_account_move_line(
             cr, uid, move, src_account_id, dest_account_id, reference_amount,
             reference_currency_id, context=context)
 
@@ -59,15 +61,16 @@ class stock_move(orm.Model):
         a transit location or is outside of the company or the source or
         destination locations belong to different operating units.
         """
-        res = super(stock_move, self)._create_product_valuation_moves(
+        res = super(StockMove, self)._create_product_valuation_moves(
             cr, uid, move, context=context)
 
         if move.product_id.valuation == 'real_time':
             # Inter-operating unit moves do not accept to
             # from/to non-internal location
             if (
-                move.location_id.company_id == move.location_dest_id.company_id
-                and move.operating_unit_id != move.operating_unit_dest_id
+                move.location_id.company_id ==
+                    move.location_dest_id.company_id and
+                    move.operating_unit_id != move.operating_unit_dest_id
             ):
                 err = False
                 if move.location_id.usage != 'internal' \
@@ -96,14 +99,14 @@ class stock_move(orm.Model):
                         cr, uid, move, src_company_ctx)
                 account_moves = []
                 account_moves += [(journal_id, self._create_account_move_line(
-                    cr, uid, move, acc_valuation, acc_valuation, reference_amount,
-                    reference_currency_id, context))]
+                    cr, uid, move, acc_valuation, acc_valuation,
+                    reference_amount, reference_currency_id, context))]
                 move_obj = self.pool.get('account.move')
                 for j_id, move_lines in account_moves:
                     move_obj.create(cr, uid,
                                     {'journal_id': j_id,
                                      'line_id': move_lines,
                                      'company_id': move.company_id.id,
-                                     'ref': move.picking_id
-                                     and move.picking_id.name},
+                                     'ref': move.picking_id and
+                                     move.picking_id.name},
                                     context=company_ctx)
