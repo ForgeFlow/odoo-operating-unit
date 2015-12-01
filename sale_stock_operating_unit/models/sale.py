@@ -39,6 +39,7 @@ class SaleShop(orm.Model):
 
 
 class SaleOrder(orm.Model):
+    _inherit = 'sale.order'
 
     def _prepare_order_picking(self, cr, uid, order, context=None):
         res = super(SaleOrder, self)._prepare_order_picking(cr, uid, order,
