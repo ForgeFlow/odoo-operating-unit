@@ -36,3 +36,16 @@ class SaleShop(orm.Model):
         (_check_warehouse_operating_unit,
          'The Operating Unit in the Warehouse must be the same as in the '
          'Sale Shop.', ['operating_unit_id', 'warehouse_id'])]
+
+
+class SaleOrder(orm.Model):
+
+    def _prepare_order_picking(self, cr, uid, order, context=None):
+        res = super(SaleOrder, self)._prepare_order_picking(cr, uid, order,
+                                                            context=context)
+        if order.operating_unit_id:
+            res.update({
+                'operating_unit_id': order.operating_unit_id.id
+            })
+
+        return res
