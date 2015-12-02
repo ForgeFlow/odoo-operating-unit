@@ -44,10 +44,10 @@ rules. Other modules extend the standard Odoo apps with the OU.
     """,
     "init_xml": [],
     "update_xml": [
-        "view/operating_unit_view.xml",
-        "view/res_users_view.xml",
         "security/operating_unit_security.xml",
         "security/ir.model.access.csv",
+        "view/operating_unit_view.xml",
+        "view/res_users_view.xml",
         "data/operating_unit_data.xml",
     ],
     'demo_xml': [
