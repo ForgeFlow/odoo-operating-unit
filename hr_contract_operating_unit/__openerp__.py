@@ -37,7 +37,7 @@ Adds a the operating unit to the HR Contract.
         "security/hr_contract_security.xml"
     ],
     'demo': [],
-    'test':[
+    'test': [
     ],
     'installable': True,
 }

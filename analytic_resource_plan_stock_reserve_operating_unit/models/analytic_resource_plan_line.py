@@ -22,7 +22,7 @@ from openerp.osv import fields, orm
 
 
 class AnalyticResourcePlanLine(orm.Model):
-    
+
     _inherit = 'analytic.resource.plan.line'
 
     def _prepare_reservation(self, cr, uid, line, context=None):
