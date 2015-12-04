@@ -28,8 +28,7 @@ class PurchaseRequestLineMakePurchaseOrder(orm.TransientModel):
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
                                              'Operating Unit',
-                                             readonly=True,
-                                             required=True),
+                                             readonly=True),
     }
 
     def default_get(self, cr, uid, fields, context=None):

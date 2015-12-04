@@ -27,7 +27,7 @@ class SaleShop(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit', required=True),
+                                             'Operating Unit'),
     }
 
     _defaults = {
@@ -70,7 +70,7 @@ class SaleOrder(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit', required=True),
+                                             'Operating Unit'),
         'shop_id': fields.many2one('sale.shop', 'Shop', required=True,
                                    readonly=True,
                                    states={'draft': [('readonly', False)],

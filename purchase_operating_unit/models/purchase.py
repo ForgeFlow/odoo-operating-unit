@@ -27,9 +27,9 @@ class PurchaseOrder(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit', required=True),
+                                             'Operating Unit'),
         'requesting_operating_unit_id': fields.many2one(
-            'operating.unit', 'Requesting Operating Unit', required=True),
+            'operating.unit', 'Requesting Operating Unit'),
     }
 
     _defaults = {
