@@ -61,6 +61,7 @@ class stock_location(orm.Model):
         return True
 
     def _check_required_operating_unit(self, cr, uid, ids, context=None):
+        return True
         for l in self.browse(cr, uid, ids, context=context):
             if l.usage == 'internal' and not l.operating_unit_id:
                 return False
