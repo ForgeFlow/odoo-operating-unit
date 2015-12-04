@@ -27,7 +27,7 @@ class AccountVoucher(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit', required=True),
+                                             'Operating Unit'),
         'writeoff_operating_unit_id': fields.many2one(
             'operating.unit', 'Write-off Operating Unit', required=False),
     }

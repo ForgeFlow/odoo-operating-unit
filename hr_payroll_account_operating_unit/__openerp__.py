@@ -35,7 +35,7 @@ based on the employee's Operating Unit defined in the Contract.
     """,
     "data": [],
     'demo': [],
-    'test':[
+    'test': [
     ],
     'installable': True,
 }

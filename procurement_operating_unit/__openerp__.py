@@ -41,7 +41,7 @@ operating unit that the user has access to.
     'demo_xml': [
 
     ],
-    'test':[
+    'test': [
     ],
     'installable': True,
     'active': False,

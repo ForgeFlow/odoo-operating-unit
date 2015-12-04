@@ -46,7 +46,7 @@ It implements user's security rules.
     'demo': [
         'demo/purchase_order_demo.xml'
     ],
-    'test':[
+    'test': [
     ],
     'installable': True,
     'active': False,

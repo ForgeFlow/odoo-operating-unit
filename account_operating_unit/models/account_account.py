@@ -26,8 +26,7 @@ class AccountAccount(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Default Operating Unit',
-                                             required=False),
+                                             'Default Operating Unit'),
     }
 
     _defaults = {

@@ -25,7 +25,7 @@ class account_invoice(orm.Model):
     _inherit = "account.invoice"
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit', required=True),
+                                             'Operating Unit'),
     }
 
     def finalize_invoice_move_lines(self, cr, uid, invoice_browse, move_lines):
