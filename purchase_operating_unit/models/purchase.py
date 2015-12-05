@@ -41,7 +41,7 @@ class PurchaseOrder(orm.Model):
 
     def _check_warehouse_operating_unit(self, cr, uid, ids, context=None):
         for po in self.browse(cr, uid, ids, context=context):
-            if po.warehouse_id and \
+            if po.warehouse_id and po.operating_unit_id and\
                     po.warehouse_id.operating_unit_id != po.operating_unit_id:
                 return False
         return True

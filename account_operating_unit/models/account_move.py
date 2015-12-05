@@ -49,7 +49,7 @@ class AccountMoveLine(orm.Model):
 
     def _check_company_operating_unit(self, cr, uid, ids, context=None):
         for ml in self.browse(cr, uid, ids, context=context):
-            if ml.company_id and ml.operating_unit_id and \
+            if ml.company_id and ml.operating_unit_id and\
                             ml.company_id != ml.operating_unit_id.company_id:
                 return False
         return True

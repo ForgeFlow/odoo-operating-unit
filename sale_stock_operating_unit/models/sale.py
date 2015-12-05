@@ -27,7 +27,7 @@ class SaleShop(orm.Model):
 
     def _check_warehouse_operating_unit(self, cr, uid, ids, context=None):
         for r in self.browse(cr, uid, ids, context=context):
-            if r.warehouse_id and \
+            if r.warehouse_id and r.operating_unit_id and \
                     r.warehouse_id.operating_unit_id != r.operating_unit_id:
                 return False
         return True

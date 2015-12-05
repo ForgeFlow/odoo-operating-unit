@@ -37,7 +37,7 @@ class SaleShop(orm.Model):
 
     def _check_company_operating_unit(self, cr, uid, ids, context=None):
         for r in self.browse(cr, uid, ids, context=context):
-            if r.company_id and \
+            if r.company_id and r.operating_unit_id and \
                     r.company_id != r.operating_unit_id.company_id:
                 return False
         return True
@@ -85,7 +85,7 @@ class SaleOrder(orm.Model):
 
     def _check_company_operating_unit(self, cr, uid, ids, context=None):
         for r in self.browse(cr, uid, ids, context=context):
-            if r.company_id and \
+            if r.company_id and r.operating_unit_id and\
                     r.company_id != r.operating_unit_id.company_id:
                 return False
         return True
