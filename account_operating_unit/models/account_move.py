@@ -30,14 +30,13 @@ class AccountMoveLine(orm.Model):
                                                         context=context)
         if context.get('operating_unit_ids', False):
             operating_unit_ids = context.get('operating_unit_ids')
-            query += 'AND '+obj+'.operating_unit_id in (%s)' % (
+            query += 'AND ' + obj + '.operating_unit_id in (%s)' % (
                 ','.join(map(str, operating_unit_ids)))
         return query
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit',
-                                             required=True),
+                                             'Operating Unit'),
         'ou_cleared_line_id': fields.many2one('account.move.line',
                                               'Inter-OU Cleared move line',
                                               required=False),
@@ -50,7 +49,7 @@ class AccountMoveLine(orm.Model):
 
     def _check_company_operating_unit(self, cr, uid, ids, context=None):
         for ml in self.browse(cr, uid, ids, context=context):
-            if ml.company_id and ml.operating_unit_id and \
+            if ml.company_id and ml.operating_unit_id and\
                             ml.company_id != ml.operating_unit_id.company_id:
                 return False
         return True

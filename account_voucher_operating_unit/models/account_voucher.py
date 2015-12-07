@@ -27,7 +27,7 @@ class AccountVoucher(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit', required=True),
+                                             'Operating Unit'),
         'writeoff_operating_unit_id': fields.many2one(
             'operating.unit', 'Write-off Operating Unit', required=False),
     }
@@ -44,12 +44,13 @@ class AccountVoucher(orm.Model):
                 return False
         return True
 
-    def _check_journal_account_operating_unit(self, cr, uid, ids, context=None):
+    def _check_journal_account_operating_unit(self, cr, uid, ids,
+                                              context=None):
         for r in self.browse(cr, uid, ids, context=context):
             if r.type not in ('payment', 'receipt'):
                 return True
             if (
-                r.journal_id and
+                r.journal_id and r.operating_unit_id and
                 r.journal_id.default_debit_account_id and
                 r.journal_id.default_debit_account_id.operating_unit_id and
                 r.journal_id.default_debit_account_id.operating_unit_id.id !=
@@ -58,7 +59,7 @@ class AccountVoucher(orm.Model):
                 return False
 
             if (
-                r.journal_id and
+                r.journal_id and r.operating_unit_id and
                 r.journal_id.default_credit_account_id and
                 r.journal_id.default_credit_account_id.operating_unit_id and
                 r.journal_id.default_credit_account_id.operating_unit_id.id !=
@@ -87,6 +88,8 @@ class AccountVoucher(orm.Model):
             context=context)
         voucher = self.pool['account.voucher'].browse(cr, uid, voucher_id,
                                                       context)
+        if not voucher.operating_unit_id:
+            return res
         if voucher.type in ('payment', 'receipt'):
             if voucher.account_id.operating_unit_id:
                 res['operating_unit_id'] = \

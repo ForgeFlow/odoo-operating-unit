@@ -94,7 +94,7 @@ To contribute to this module, please visit http://odoo-community.org.
     'demo_xml': [
 
     ],
-    'test':[
+    'test': [
     ],
     'installable': True,
     'active': False,

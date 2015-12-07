@@ -23,8 +23,7 @@ class stock_warehouse(orm.Model):
     _inherit = "stock.warehouse"
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit',
-                                             required=True),
+                                             'Operating Unit'),
     }
 
     _defaults = {
@@ -38,8 +37,7 @@ class stock_location(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit',
-                                             required=False),
+                                             'Operating Unit'),
     }
 
     def _check_warehouse_operating_unit(self, cr, uid, ids, context=None):
@@ -63,6 +61,7 @@ class stock_location(orm.Model):
         return True
 
     def _check_required_operating_unit(self, cr, uid, ids, context=None):
+        return True
         for l in self.browse(cr, uid, ids, context=context):
             if l.usage == 'internal' and not l.operating_unit_id:
                 return False
@@ -109,8 +108,7 @@ class stock_picking(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one(
-            'operating.unit', string='Requesting Operating Unit',
-            required=True),
+            'operating.unit', string='Requesting Operating Unit'),
     }
 
     _defaults = {

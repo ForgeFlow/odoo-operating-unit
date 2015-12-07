@@ -37,7 +37,7 @@ Adds a the operating unit to the HR Expense.
         "security/hr_expense_security.xml"
     ],
     'demo': [],
-    'test':[
+    'test': [
     ],
     'installable': True,
 }

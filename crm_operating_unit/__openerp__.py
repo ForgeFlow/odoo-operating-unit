@@ -37,7 +37,7 @@ This module introduces the operating unit to CRM
     ],
     'demo': [
     ],
-    'test':[
+    'test': [
     ],
     'installable': True,
     'active': False,

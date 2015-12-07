@@ -23,7 +23,7 @@ from openerp.tools.translate import _
 
 
 class AnalyticResourcePlanLine(orm.Model):
-    
+
     _inherit = 'analytic.resource.plan.line'
 
     def _prepare_reservation(self, cr, uid, line, context=None):

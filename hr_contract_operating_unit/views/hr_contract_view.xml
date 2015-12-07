@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="hr_contract.hr_contract_view_search"/>
             <field name="arch" type="xml">
                 <field name="employee_id" position="after">
-                    <field name="operating_unit_id"/>
+                    <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                 </field>
             </field>
         </record>
@@ -19,7 +19,7 @@
             <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
             <field name="arch" type="xml">
                 <field name="employee_id" position="after">
-                    <field name="operating_unit_id"/>
+                    <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                 </field>
             </field>
         </record>
@@ -30,7 +30,7 @@
             <field name="inherit_id" ref="hr_contract.hr_contract_view_tree"/>
             <field name="arch" type="xml">
                 <field name="employee_id" position="after">
-                    <field name="operating_unit_id"/>
+                    <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                 </field>
             </field>
         </record>
