@@ -19,6 +19,7 @@
 #
 ##############################################################################
 from openerp.osv import fields, orm
+from openerp.tools.translate import _
 
 
 class AnalyticResourcePlanLine(orm.Model):
@@ -30,9 +31,16 @@ class AnalyticResourcePlanLine(orm.Model):
                         self)._prepare_reservation(cr, uid, line,
                                                    context=context)
             location_obj = self.pool['stock.location']
-            reseve_location_id = location_obj.search(
+            reseve_location_ids = location_obj.search(
                 cr, uid, [('operating_unit_id', '=',
                            line.account_id.location_id.operating_unit_id.id
-                           ), ('stock_reserve', '=', True)], context=context)
-            res.update({'location_dest_id': reseve_location_id})
+                           ), ('reserved', '=', True)], context=context)
+            if reseve_location_ids:
+                res.update({'location_dest_id': reseve_location_ids[0]})
+            else:
+                orm.except_orm(
+                    _('Error'),
+                    _('You need to define a Reservation Location assigned to '
+                      'Operating Unit %s')
+                    % line.account_id.location_id.operating_unit_id.name)
             return res
