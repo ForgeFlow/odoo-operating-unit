@@ -21,7 +21,7 @@
 from openerp.osv import fields, orm
 
 
-class OperatingUnit(orm.Model):
+class operating_unit(orm.Model):
 
     _name = 'operating.unit'
     _description = 'Operating Unit'

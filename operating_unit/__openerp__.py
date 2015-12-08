@@ -21,8 +21,8 @@
 
 {
     "name": "Operating Unit",
-    "version": "1.0",
-    "author": "Eficent",
+    "version": "7.0.0.0.0",
+    "author": "Eficent, Odoo Community Association (OCA)",
     "website": "http://www.eficent.com",
     "category": "Generic",
     "depends": ["base"],
@@ -42,7 +42,7 @@ following features:
 The current module defines the operating unit entity and the user's security
 rules. Other modules extend the standard Odoo apps with the OU.
     """,
-    "init_xml": [],
+    "license": "AGPL-3",
     "update_xml": [
         "security/operating_unit_security.xml",
         "security/ir.model.access.csv",
@@ -53,7 +53,6 @@ rules. Other modules extend the standard Odoo apps with the OU.
     'demo_xml': [
         "demo/operating_unit_demo.xml"
     ],
-    'test': [],
     'installable': True,
     'active': False,
     'certificate': '',

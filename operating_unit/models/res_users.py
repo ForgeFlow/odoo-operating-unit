@@ -21,7 +21,7 @@
 from openerp.osv import fields, orm
 
 
-class ResUsers(orm.Model):
+class res_users(orm.Model):
 
     _inherit = 'res.users'
 
