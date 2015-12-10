@@ -1,28 +1,12 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    Copyright (C) 2014 Eficent (<http://www.eficent.com/>)
-#               <contact@eficent.com>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# © 2015 Eficent - Jordi Ballester Alomar
+# © 2015 Serpent Consulting Services Pvt. Ltd. - Sudhir Arya
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 {
     "name": "Operating Unit",
-    "version": "1.0",
-    "author": "Eficent",
+    "version": "7.0.1.0.0",
+    "author": "Eficent, Odoo Community Association (OCA)",
     "website": "http://www.eficent.com",
     "category": "Generic",
     "depends": ["base"],
@@ -42,7 +26,7 @@ following features:
 The current module defines the operating unit entity and the user's security
 rules. Other modules extend the standard Odoo apps with the OU.
     """,
-    "init_xml": [],
+    "license": "AGPL-3",
     "update_xml": [
         "security/operating_unit_security.xml",
         "security/ir.model.access.csv",
@@ -53,7 +37,6 @@ rules. Other modules extend the standard Odoo apps with the OU.
     'demo_xml': [
         "demo/operating_unit_demo.xml"
     ],
-    'test': [],
     'installable': True,
     'active': False,
     'certificate': '',

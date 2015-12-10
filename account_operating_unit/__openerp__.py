@@ -1,27 +1,11 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    Author: Jordi Ballester (Eficent)
-#    Copyright 2015 Eficent
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# © 2015 Eficent - Jordi Ballester Alomar
+# © 2015 Serpent Consulting Services Pvt. Ltd. - Sudhir Arya
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 {
     'name': 'Accounting with Operating Units',
-    'version': '1.0.1',
+    'version': '7.0.1.0.0',
     'category': 'Generic Modules/Sales & Purchases',
     'description': '''
 Accounting with Operating Units
@@ -40,17 +24,17 @@ journal entries using different accounts.
 - Adds the Operating Unit in the invoice
 - Implements security rules in the invoice
 ''',
-    'author': "Eficent,Odoo Community Association (OCA)",
+    'author': "Eficent, Odoo Community Association (OCA)",
     'website': 'http://www.eficent.com',
     'depends': ['account', 'operating_unit'],
     'data': [
+        'security/account_security.xml',
         'views/account_move_view.xml',
         'views/account_account_view.xml',
         'views/company_view.xml',
         'views/invoice_view.xml',
         'wizard/account_report_common_view.xml',
         'wizard/account_financial_report_view.xml',
-        'security/account_security.xml'
     ],
     'demo': [
         'demo/account_minimal.xml'
