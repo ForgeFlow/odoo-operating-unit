@@ -10,5 +10,15 @@
             <field name="user_type" ref="account.data_account_type_liability"/>
         </record>
 
+        <record id="account.bnk" model="account.account">
+            <field name="operating_unit_id"
+                   ref="operating_unit.main_operating_unit"/>
+        </record>
+
+        <record id="account.cash" model="account.account">
+            <field name="operating_unit_id"
+                   ref="operating_unit.main_operating_unit"/>
+        </record>
+
     </data>
 </openerp>
