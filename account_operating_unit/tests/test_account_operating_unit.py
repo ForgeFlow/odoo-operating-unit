@@ -19,6 +19,8 @@ class TestAccountOperatingUnit(common.TransactionCase):
         self.operating_unit_model = self.registry('operating.unit')
         self.res_users_model = self.registry('res.users')
         self.res_company_model = self.registry('res.company')
+        self.acc_move_obj = self.registry('account.move')
+        self.aml_obj = self.registry('account.move.line')
         self.res_groups = self.registry('res.groups')
         data_model = self.registry('ir.model.data')
         _, company_id = data_model.get_object_reference(
@@ -26,7 +28,7 @@ class TestAccountOperatingUnit(common.TransactionCase):
         self.company = self.res_company_model.browse(cr, uid, company_id,
                                                       context=context)
         _, group_account_user_id = data_model.get_object_reference(
-            cr, uid, 'account', 'group_account_manager')
+            cr, uid, 'account', 'group_account_invoice')
         self.group_account_user = self.res_groups.browse(
             cr, uid, group_account_user_id, context=context)
         _, ou1_id = data_model.get_object_reference(
@@ -72,6 +74,64 @@ class TestAccountOperatingUnit(common.TransactionCase):
                                     (self.product3, 800)], context=context)
         self.invoice = self.invoice_obj.browse(
             cr, user1_id, invoice_id, context=context)
+        self.move_id = self._create_account_move(cr, user1_id, account_id,
+                                                 context=context)
+        self._check_balance(cr, user1_id, account_id, context=context)
+        self._check_balance(cr, user1_id,
+                            self.company.inter_ou_clearing_account_id.id,
+                            context=context)
+
+    def _create_account_move(self, cr, uid, account_id, context=None):
+        journal_ids = self.registry('account.journal').search(cr, uid,
+                                                 [('code', '=', 'MISC')])
+        default_move_vals = self.acc_move_obj.default_get(cr, uid, [],
+                                                          context=context)
+        move_vals = {}
+        move_vals.update(default_move_vals)
+        lines = [(0, 0, {
+                'name': 'Test',
+                'account_id': account_id,
+                'debit':0,
+                'credit': 100,
+                'operating_unit_id': self.b2b_id.id,
+            }),
+                 (0, 0, {
+                'name': 'Test',
+                'account_id': account_id,
+                'debit': 100,
+                'credit': 0,
+                'operating_unit_id': self.b2c_id.id,
+            })]
+        move_vals.update({
+            'journal_id': journal_ids and journal_ids[0],
+            'line_id': lines,
+        })
+        move_id = self.acc_move_obj.create(cr, uid, move_vals)
+        return move_id
+
+    def _get_balance(self, cr, uid, domain):
+        aml_rec = self.aml_obj.read_group(cr, uid, domain,
+                                ['debit', 'credit', 'account_id'],
+                                ['account_id'])[0]
+        return aml_rec.get('debit', 0) - aml_rec.get('credit', 0)
+
+    def _check_balance(self, cr, uid, account_id, context=None):
+        #check balance for all operating units
+        domain = [('account_id', '=', account_id)]
+        balance = self._get_balance(cr, uid, domain)
+        self.assertEqual(balance, 0.0, 'Balance is 0 for all Operating Units.')
+        #check balance for operating B2B units
+        domain = [('account_id', '=', account_id),
+                  ('operating_unit_id', '=', self.b2b_id.id)]
+        balance = self._get_balance(cr, uid, domain)
+        self.assertEqual(balance, -100,
+                         'Balance is -100 for Operating Unit B2B.')
+        #check balance for operating B2C units
+        domain = [('account_id', '=', account_id),
+                  ('operating_unit_id', '=', self.b2c_id.id)]
+        balance = self._get_balance(cr, uid, domain)
+        self.assertEqual(balance, 100.0,
+                         'Balance is 100 for Operating Unit B2C.')
 
     def _create_account(self, cr, uid, company, context=None):
         """ Create an account.
