@@ -25,39 +25,54 @@ class TestAccountOperatingUnit(common.TransactionCase):
         self.inv_line_obj = self.registry('account.invoice.line')
         self.acc_type_obj = self.registry('account.account.type')
         self.operating_unit_model = self.registry('operating.unit')
+        # company
         self.company = data_model.get_object(cr, uid, 'base', 'main_company')
         self.grp_acc_user = data_model.get_object(cr, uid, 'account',
                                                   'group_account_invoice')
+        # Main Operating Unit
         self.ou1 = data_model.get_object(cr, uid, 'operating_unit',
                                          'main_operating_unit')
+        # B2B Operating Unit
         self.b2b = data_model.get_object(cr, uid, 'operating_unit',
                                          'b2b_operating_unit')
+        # B2C Operating Unit
         self.b2c = data_model.get_object(cr, uid, 'operating_unit',
                                          'b2c_operating_unit')
+        # Partner
         self.partner1 = data_model.get_object(cr, uid, 'base', 'res_partner_1')
+        # Products
         self.product1 = data_model.get_object(cr, uid, 'product',
                                               'product_product_7')
         self.product2 = data_model.get_object(cr, uid, 'product',
                                                'product_product_9')
         self.product3 = data_model.get_object(cr, uid, 'product',
                                               'product_product_11')
+        # Create user1
         user1_id = self._create_user(cr, uid, 'user_1', [self.grp_acc_user],
                                      self.company, [self.b2b, self.b2c],
                                      context=context)
+        # Create & validate the invoice
         invoice_id = self._create_validate_invoice(cr, user1_id,
                                                    [(self.product1, 1000),
                                                     (self.product2, 500),
                                                     (self.product3, 800)])
         self.invoice = self.invoice_obj.browse(cr, user1_id, invoice_id,
                                                context=context)
+        # Check Operating Units in journal entries
         self._check_move_accounts(cr, user1_id, invoice_id)
+        # Create cash - test account
         account_id = self._create_account(cr, uid, self.company,
                                           context=context)
+        # Create & post journal entries
         self._create_account_move(cr, user1_id, account_id,
                                                  context=context)
-        self._check_balance(cr, user1_id, account_id, context=context)
+        # Check the balance of the account
+        self._check_balance(cr, user1_id, account_id, type='cash',
+                            context=context)
         clearing_account_id = self.company.inter_ou_clearing_account_id.id
-        self._check_balance(cr, user1_id, clearing_account_id, context=context)
+        self._check_balance(cr, user1_id, clearing_account_id, type='clearing',
+                            context=context)
+        # Create user2
         self.user2_id = self._create_user(cr, uid, 'user_2',
                                           [self.grp_acc_user],
                                           self.company, [self.b2c],
@@ -131,8 +146,8 @@ class TestAccountOperatingUnit(common.TransactionCase):
                            for move_line in self.invoice.move_id.line_id)
         # Assert if journal entries of the invoice
         # have different operating units
-#        self.assertNotEqual(all_op_units, False, 'Journal Entries have\
-#                            different Operating Units.')
+        self.assertNotEqual(all_op_units, False, 'Journal Entries have\
+                            different Operating Units.')
 
     def _create_account(self, cr, uid, company, context=None):
         """Create an account."""
@@ -179,7 +194,8 @@ class TestAccountOperatingUnit(common.TransactionCase):
         self.acc_move_obj.button_validate(cr, uid, [move_id])
         return True
 
-    def _check_balance(self, cr, uid, account_id, context=None):
+    def _check_balance(self, cr, uid, account_id, acc_type='clearing',
+                       context=None):
         """
         Check the balance of the account based on different operating units.
         """
@@ -191,14 +207,22 @@ class TestAccountOperatingUnit(common.TransactionCase):
         domain = [('account_id', '=', account_id),
                   ('operating_unit_id', '=', self.b2b.id)]
         balance = self._get_balance(cr, uid, domain)
-        self.assertEqual(balance, -100,
-                         'Balance is -100 for Operating Unit B2B.')
+        if acc_type == 'cash':
+            self.assertEqual(balance, -100,
+                             'Balance is -100 for Operating Unit B2B.')
+        else:
+            self.assertEqual(balance, 100,
+                             'Balance is 100 for Operating Unit B2B.')
         # Check balance for operating B2C units
         domain = [('account_id', '=', account_id),
                   ('operating_unit_id', '=', self.b2c.id)]
         balance = self._get_balance(cr, uid, domain)
-        self.assertEqual(balance, 100.0,
-                         'Balance is 100 for Operating Unit B2C.')
+        if acc_type == 'cash':
+            self.assertEqual(balance, 100.0,
+                             'Balance is 100 for Operating Unit B2C.')
+        else:
+            self.assertEqual(balance, -100.0,
+                             'Balance is -100 for Operating Unit B2C.')
 
     def _get_balance(self, cr, uid, domain):
         """
@@ -217,5 +241,5 @@ class TestAccountOperatingUnit(common.TransactionCase):
                                        [('operating_unit_id',
                                          '=',
                                          self.b2b.id)])
-#        self.assertNotEqual(move_ids, [], 'You do not have access to Journal\
-#                            Entries of other operating units.')
+        self.assertNotEqual(move_ids, [], 'You do not have access to Journal\
+                            Entries of other operating units.')
