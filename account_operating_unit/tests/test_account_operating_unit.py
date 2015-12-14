@@ -186,22 +186,19 @@ class TestAccountOperatingUnit(common.TransactionCase):
         # Check balance for all operating units
         domain = [('account_id', '=', account_id)]
         balance = self._get_balance(cr, uid, domain)
-        print "\n\nAAA######    ", balance
-#        self.assertEqual(balance, 0.0, 'Balance is 0 for all Operating Units.')
+        self.assertEqual(balance, 0.0, 'Balance is 0 for all Operating Units.')
         # Check balance for operating B2B units
         domain = [('account_id', '=', account_id),
                   ('operating_unit_id', '=', self.b2b.id)]
         balance = self._get_balance(cr, uid, domain)
-        print "\n\nBBBB######    ", balance
-#        self.assertEqual(balance, -100,
-#                         'Balance is -100 for Operating Unit B2B.')
+        self.assertEqual(balance, -100,
+                         'Balance is -100 for Operating Unit B2B.')
         # Check balance for operating B2C units
         domain = [('account_id', '=', account_id),
                   ('operating_unit_id', '=', self.b2c.id)]
         balance = self._get_balance(cr, uid, domain)
-        print "\n\nCCCC######    ", balance
-#        self.assertEqual(balance, 100.0,
-#                         'Balance is 100 for Operating Unit B2C.')
+        self.assertEqual(balance, 100.0,
+                         'Balance is 100 for Operating Unit B2C.')
 
     def _get_balance(self, cr, uid, domain):
         """
