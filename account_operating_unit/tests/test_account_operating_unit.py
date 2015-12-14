@@ -67,11 +67,11 @@ class TestAccountOperatingUnit(common.TransactionCase):
         self._create_account_move(cr, user1_id, account_id,
                                                  context=context)
         # Check the balance of the account
-        self._check_balance(cr, user1_id, account_id, type='cash',
+        self._check_balance(cr, user1_id, account_id, acc_type='cash',
                             context=context)
         clearing_account_id = self.company.inter_ou_clearing_account_id.id
-        self._check_balance(cr, user1_id, clearing_account_id, type='clearing',
-                            context=context)
+        self._check_balance(cr, user1_id, clearing_account_id,
+                            acc_type='clearing', context=context)
         # Create user2
         self.user2_id = self._create_user(cr, uid, 'user_2',
                                           [self.grp_acc_user],
@@ -142,7 +142,7 @@ class TestAccountOperatingUnit(common.TransactionCase):
         """
         Check if journal entries of the invoice have same operating units.
         """
-        all_op_units = all(move_line.operating_unit_id.id != self.b2b.id\
+        all_op_units = all(move_line.operating_unit_id.id == self.b2b.id\
                            for move_line in self.invoice.move_id.line_id)
         # Assert if journal entries of the invoice
         # have different operating units
