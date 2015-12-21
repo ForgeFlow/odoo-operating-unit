@@ -58,7 +58,6 @@
             </field>
         </record>
 
-
         <record id="vpicktree" model="ir.ui.view">
             <field name="name">stock.picking.tree</field>
             <field name="model">stock.picking</field>
@@ -181,7 +180,6 @@
                 <xpath expr="//field[@name='location_dest_id']" position="after">
                     <field name="operating_unit_dest_id" groups="operating_unit.group_multi_operating_unit"/>
                 </xpath>
-
             </field>
         </record>
 
