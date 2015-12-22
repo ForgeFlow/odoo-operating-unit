@@ -90,11 +90,21 @@ class SaleOrder(orm.Model):
                 return False
         return True
 
+    def _check_shop_operating_unit(self, cr, uid, ids, context=None):
+        for r in self.browse(cr, uid, ids, context=context):
+            if r.operating_unit_id != r.shop_id.operating_unit_id:
+                return False
+        return True
+
     _constraints = [
         (_check_company_operating_unit,
          'The Company in the Sales Order and in the Operating '
          'Unit must be the same.', ['operating_unit_id',
-                                    'company_id'])]
+                                    'company_id']),
+        (_check_shop_operating_unit,
+         'The Operating Unit in the Sales Order and in the Shop '
+         '%s must be the same.', ['operating_unit_id', 'shop_id']),
+    ]
 
     def _make_invoice(self, cr, uid, order, lines, context=None):
         invoice_obj = self.pool.get('account.invoice')

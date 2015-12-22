@@ -23,22 +23,10 @@ class ProcurementOrder(orm.Model):
          'belong to the same Operating Unit.', ['operating_unit_id',
                                                 'purchase_id'])]
 
-    def create_procurement_purchase_order(self, cr, uid, procurement, po_vals, line_vals, context=None):
-        """Create the purchase order from the procurement, using
-           the provided field values, after adding the given purchase
-           order line in the purchase order.
-
-           :params procurement: the procurement object generating the purchase order
-           :params dict po_vals: field values for the new purchase order (the
-                                 ``order_line`` field will be overwritten with one
-                                 single line, as passed in ``line_vals``).
-           :params dict line_vals: field values of the single purchase order line that
-                                   the purchase order will contain.
-           :return: id of the newly created purchase order
-           :rtype: int
-        """
+    def create_procurement_purchase_order(self, cr, uid, procurement, po_vals,
+                                          line_vals, context=None):
         if procurement.location_id.operating_unit_id:
-            line_vals.update({
+            po_vals.update({
                 'operating_unit_id':
                     procurement.location_id.operating_unit_id.id,
                 'requesting_operating_unit_id':
