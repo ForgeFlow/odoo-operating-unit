@@ -3,17 +3,14 @@
    :alt: License: AGPL-3
 
 ===============================
-Accounting with Operating Units
+Purchase with Operating Units
 ===============================
 
 This module introduces the following features:
-- Adds the Operating Unit in the account move line.
-- Define an Inter-operating unit clearing account at company level.
-- When users create a journal entry with lines in different operating units,
-at the time of posting the journal entry it automatically creates the corresponding
-lines in the Inter-operating unit clearing account, making each OU self-balancing.
-- Introduces checks that prevent users from entering cross-operating unit
-journal entries using different accounts.
+- It introduces the operating unit to the purchase order.
+- The operating unit is copied to the invoice.
+- The operating unit is copied to the stock picking.
+- It implements user's security rules.
 
 Installation
 ============
@@ -23,12 +20,6 @@ No external library is used.
 Configuration
 =============
 
-To configure this module, you need to:
-
-* Create an account for "Inter-OU Clearing" of type Regular.
-* Go to *Settings / Companies / Companies* and configure "Inter-OU Clearing" account
-in "Inter-operating unit clearing account" field.
-* Assign Operating Unit in Accounts.
 
 Usage
 =====
@@ -46,7 +37,7 @@ check there if your issue has already been reported. If you spotted it first,
 help us smashing it by providing a detailed and welcomed `feedback
 <https://github.com/OCA/
 213/issues/new?body=module:%20
-operating_unit%0Aversion:%20
+purchase_operating_unit%0Aversion:%20
 7.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Credits

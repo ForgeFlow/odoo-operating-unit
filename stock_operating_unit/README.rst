@@ -2,18 +2,15 @@
    :target: https://www.gnu.org/licenses/agpl.html
    :alt: License: AGPL-3
 
-===============================
-Accounting with Operating Units
-===============================
+==========================
+Stock with Operating Units
+==========================
 
 This module introduces the following features:
-- Adds the Operating Unit in the account move line.
-- Define an Inter-operating unit clearing account at company level.
-- When users create a journal entry with lines in different operating units,
-at the time of posting the journal entry it automatically creates the corresponding
-lines in the Inter-operating unit clearing account, making each OU self-balancing.
-- Introduces checks that prevent users from entering cross-operating unit
-journal entries using different accounts.
+- Adds the operating unit to the Warehouse.
+- Adds the operating unit to the Stock Location.
+- Adds the requesting operating unit to stock pickings.
+- Implements user's security access rules.
 
 Installation
 ============
@@ -25,10 +22,8 @@ Configuration
 
 To configure this module, you need to:
 
-* Create an account for "Inter-OU Clearing" of type Regular.
-* Go to *Settings / Companies / Companies* and configure "Inter-OU Clearing" account
-in "Inter-operating unit clearing account" field.
-* Assign Operating Unit in Accounts.
+* Assign Operating Unit to Warehouses.
+* Assign Operating Unit to Stock Locations.
 
 Usage
 =====
