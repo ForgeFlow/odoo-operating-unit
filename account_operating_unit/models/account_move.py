@@ -111,35 +111,52 @@ class AccountMove(orm.Model):
         for move in self.browse(cr, uid, ids):
             dr = {}
             cr = {}
-            ou_ids = []
+            account_ids = []
+            ou_ids = [line.operating_unit_id.id for line in move.line_id
+                      if line.operating_unit_id]
+            ou_ids = list(set(ou_ids))
+
             for line in move.line_id:
-                if line.operating_unit_id.id:
+                account_ids.append(line.account_id.id)
+                if line.account_id.id not in dr:
+                    dr[line.account_id.id] = {}
+                if line.account_id.id not in cr:
+                    cr[line.account_id.id] = {}
+                operating_unit_id = line.operating_unit_id and \
+                    line.operating_unit_id.id
+                if operating_unit_id:
                     cl_acc = \
                         line.company_id.inter_ou_clearing_account_id
-                    if not cl_acc:
+                    if len(ou_ids) > 1 and not cl_acc:
                         raise orm.except_orm(
                             _('Error!'),
                             _("You need to define an inter-operating unit "
                               "clearing account in the company settings."))
-                    ou_ids.append(line.operating_unit_id.id)
                     if not cl_acc:
-                        if line.operating_unit_id.id in dr:
-                            dr[line.operating_unit_id.id] += line.debit
+                        if operating_unit_id in dr[line.account_id.id]:
+                            dr[line.account_id.id][operating_unit_id] += \
+                                line.debit
                         else:
-                            dr[line.operating_unit_id.id] = line.debit
+                            dr[line.account_id.id][operating_unit_id] = \
+                                line.debit
 
-                        if line.operating_unit_id.id in cr:
-                            cr[line.operating_unit_id.id] += line.credit
+                        if operating_unit_id in cr[line.account_id.id]:
+                            cr[line.account_id.id][operating_unit_id] += \
+                                line.credit
                         else:
-                            cr[line.operating_unit_id.id] = line.credit
+                            cr[line.account_id.id][operating_unit_id] = \
+                                line.credit
             for ou_id in ou_ids:
-                if (
-                    ou_id in dr and
-                    ou_id in cr and
-                    dr[ou_id] > 0 and
-                    cr[ou_id] > 0
-                ):
-                    return False
+                for account_id in account_ids:
+                    if (
+                        account_id in dr and
+                        account_id in cr and
+                        ou_id in dr[account_id] and
+                        ou_id in cr[account_id] and
+                        dr[account_id][ou_id] > 0 and
+                        cr[account_id][ou_id] > 0
+                    ):
+                        return False
         return True
 
     _constraints = [
