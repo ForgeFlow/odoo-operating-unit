@@ -90,6 +90,7 @@
             <field eval="1" name="active"/>
             <field name="name">Your Company, B2B</field>
             <field name="chained_auto_packing">manual</field>
+            <field name="operating_unit_id" ref="operating_unit.b2b_operating_unit"/>
         </record>
         <record id="stock_warehouse_b2b" model="stock.warehouse">
             <field name="lot_output_id" ref="stock.stock_location_output"/>
@@ -98,6 +99,7 @@
             <field name="partner_id" ref="base.main_partner"/>
             <field name="company_id" ref="base.main_company"/>
             <field name="lot_input_id" ref="stock_location_b2b"/>
+            <field name="operating_unit_id" ref="operating_unit.b2b_operating_unit"/>
         </record>
 
         <!--B2C-->
@@ -109,6 +111,7 @@
             <field eval="1" name="active"/>
             <field name="name">Your Company, B2C</field>
             <field name="chained_auto_packing">manual</field>
+            <field name="operating_unit_id" ref="operating_unit.b2c_operating_unit"/>
         </record>
         <record id="stock_warehouse_b2c" model="stock.warehouse">
             <field name="lot_output_id" ref="stock.stock_location_output"/>
@@ -117,6 +120,7 @@
             <field name="partner_id" ref="base.main_partner"/>
             <field name="company_id" ref="base.main_company"/>
             <field name="lot_input_id" ref="stock_location_b2c"/>
+            <field name="operating_unit_id" ref="operating_unit.b2c_operating_unit"/>
         </record>
 
     </data>
