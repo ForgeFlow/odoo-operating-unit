@@ -10,12 +10,15 @@
     'description': """\
 Stock with Operating Units
 ==========================
-- Adds the operating unit to the stock locations.
-- Adds the operating unit to stock moves.
+This module introduces the following features:
+- Adds the operating unit to the Warehouse.
+- Adds the operating unit to the Stock Location.
 - Adds the requesting operating unit to stock pickings.
 - Implements user's security access rules.
 """,
-    'author': "Eficent, Odoo Community Association (OCA)",
+    'author': "Eficent Business and IT Consulting Services S.L., "
+              "Serpent Consulting Services Pvt. Ltd.,"
+              "Odoo Community Association (OCA)",
     'website': 'http://camptocamp.com',
     'depends': ['stock', 'account_operating_unit'],
     'data': [
