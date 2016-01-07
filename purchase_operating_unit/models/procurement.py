@@ -5,7 +5,7 @@
 from openerp.osv import fields, orm
 
 
-class ProcurementOrder(orm.Model):
+class procurement_order(orm.Model):
 
     _inherit = 'procurement.order'
 
@@ -32,6 +32,6 @@ class ProcurementOrder(orm.Model):
                 'requesting_operating_unit_id':
                     procurement.location_id.operating_unit_id.id
             })
-        return super(ProcurementOrder, self).\
+        return super(procurement_order, self).\
             create_procurement_purchase_order(cr, uid, procurement, po_vals,
                                               line_vals, context=context)
