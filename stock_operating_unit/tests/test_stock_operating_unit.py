@@ -57,7 +57,7 @@ class TestStockOperatingUnit(common.TransactionCase):
                                           [self.b2c])
         # Create Incoming Shipments
         self.picking_in1_id = self._create_picking(cr, uid, self.user1_id,
-                                                   self.b2c.id,
+                                                   self.ou1.id,
                                                    'in',
                                                    self.supplier_location.id,
                                                    self.stock_location.id)
@@ -143,13 +143,14 @@ class TestStockOperatingUnit(common.TransactionCase):
         wh_ids = self.warehouse_model.\
             search(cr, self.user2_id,
                    [('operating_unit_id', '=', self.ou1.id)])
-        self.assertEqual(wh_ids, [], 'User 2 cannot not list the warehouses\
-                         assigned to Main Operating Unit.')
+        self.assertEqual(wh_ids, [], 'User 2 should not be able to list the '
+                                     'warehouses assigned to Main Operating '
+                                     'Unit.')
         # User 2 cannot list the locations assigned to Main OU
         location_ids = self.location_model.\
             search(cr, self.user2_id,
                    [('operating_unit_id', 'in', [self.ou1.id])])
-        self.assertEqual(location_ids, [], 'User 2 cannot list\
+        self.assertEqual(location_ids, [], 'User 2 should not be able to list\
                          the locations assigned to Main OU.')
         pickings = [self.picking_in1_id, self.picking_in2_id,
                     self.picking_int_id]
@@ -157,20 +158,22 @@ class TestStockOperatingUnit(common.TransactionCase):
         picking_ids =\
             self.picking_model.search(cr, self.user1_id,
                                       [('id', 'in', pickings)])
-        self.assertNotEqual(picking_ids, [], 'User 2 cannot list the\
-                            warehouses assigned to Main Operating Unit.')
-        # User 1 can list the stock moves assigned to pickings 1, 2, 3
+        self.assertNotEqual(picking_ids, [], 'User 1 cannot list '
+                                             'the pickings assigned to '
+                                             'pickings 1, 2, 3.')
+        # User 1 can list the stock moves assigned to picking 1, 2, 3
         move_ids =\
             self.move_model.search(cr, self.user1_id,
                                    [('picking_id', 'in', pickings)])
-        self.assertNotEqual(move_ids, [], 'User 1 can list the\
+        self.assertNotEqual(move_ids, [], 'User 1 cannot list the\
                             stock moves assigned to pickings 1, 2, 3.')
         # User 2 cannot list the the stock moves assigned to picking 1
         move_ids =\
             self.move_model.search(cr, self.user2_id,
-                                   [('picking_id', 'in', pickings)])
-        self.assertNotEqual(move_ids, [], 'User 2 cannot list the\
-                            stock moves assigned to pickings 1, 2, 3.')
+                                   [('picking_id', '=', self.picking_in1_id)])
+        self.assertEqual(move_ids, [], 'User 2 sould not be able to list '
+                                       'the stock moves assigned to '
+                                       'picking 1.')
         # User 2 cannot list the pickings 1
         picking_ids =\
             self.picking_model.search(cr, self.user2_id,
