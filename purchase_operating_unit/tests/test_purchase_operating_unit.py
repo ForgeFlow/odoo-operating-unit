@@ -2,8 +2,8 @@
 # © 2015 Eficent - Jordi Ballester Alomar
 # © 2015 Serpent Consulting Services Pvt. Ltd. - Sudhir Arya
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-from openerp.tests import common
 from openerp import netsvc
+from openerp.tests import common
 
 
 class TestPurchaseOperatingUnit(common.TransactionCase):
@@ -11,7 +11,6 @@ class TestPurchaseOperatingUnit(common.TransactionCase):
     def setUp(self):
         super(TestPurchaseOperatingUnit, self).setUp()
         cr, uid, context = self.cr, self.uid, {}
-
         self.purchase_model = self.registry('purchase.order')
         self.purchase_line_model = self.registry('purchase.order.line')
         self.stock_picking_model = self.registry('stock.picking')
@@ -138,7 +137,6 @@ class TestPurchaseOperatingUnit(common.TransactionCase):
             'operating_unit_ids': [(4, ou.id) for ou in operating_units],
             'groups_id': [(6, 0, group_ids)]
         })
-
         return user_id
 
     def _create_purchase(self, cr, uid, invoice_method, line_products,
@@ -159,9 +157,7 @@ class TestPurchaseOperatingUnit(common.TransactionCase):
                 cr, uid, [], self.purchase_pricelist.id, product.id, qty,
                 product.uom_id.id, self.partner1.id, context=context)
             line_values.update(onchange_res['value'])
-            lines.append(
-                (0, 0, line_values)
-            )
+            lines.append((0, 0, line_values))
         po = self.purchase_model.create(cr, uid, {
             'operating_unit_id': self.ou1.id,
             'requesting_operating_unit_id': self.ou1.id,
@@ -176,7 +172,7 @@ class TestPurchaseOperatingUnit(common.TransactionCase):
         return po
 
     def test_security(self):
-        cr, uid, context = self.cr, self.uid, {}
+        cr, context = self.cr, {}
         # User 2 is only assigned to Operating Unit 2, and cannot list
         # purchase orders from Operating Unit 1.
         po_ids = self.purchase_model.search(cr, self.user2.id,

@@ -5,7 +5,7 @@
 from openerp.osv import fields, orm
 
 
-class PurchaseOrder(orm.Model):
+class purchase_order(orm.Model):
 
     _inherit = 'purchase.order'
 
@@ -54,7 +54,7 @@ class PurchaseOrder(orm.Model):
 
     def onchange_warehouse_id(self, cr, uid, ids, warehouse_id,
                               requesting_operating_unit_id, operating_unit_id):
-        res = super(PurchaseOrder, self).onchange_warehouse_id(
+        res = super(purchase_order, self).onchange_warehouse_id(
             cr, uid, ids, warehouse_id)
         if not res:
             return {}
@@ -99,7 +99,7 @@ class PurchaseOrder(orm.Model):
         if context is None:
             context = {}
         invoice_obj = self.pool.get('account.invoice')
-        inv_id = super(PurchaseOrder, self).action_invoice_create(
+        inv_id = super(purchase_order, self).action_invoice_create(
             cr, uid, ids, context=context)
         for order in self.browse(cr, uid, ids, context=context):
             for invoice in order.invoice_ids:
@@ -113,7 +113,7 @@ class PurchaseOrder(orm.Model):
     def _prepare_order_picking(self, cr, uid, order, context=None):
         if context is None:
             context = {}
-        res = super(PurchaseOrder, self)._prepare_order_picking(
+        res = super(purchase_order, self)._prepare_order_picking(
             cr, uid, order, context=context)
         if order.operating_unit_id:
             res['operating_unit_id'] = order.operating_unit_id.id
