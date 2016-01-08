@@ -32,10 +32,6 @@ class TestStockOperatingUnit(common.TransactionCase):
         # Products
         self.product1 = data_model.get_object(cr, uid, 'product',
                                               'product_product_7')
-        # Locations
-#        b2c_wh = data_model.get_object(cr, uid, 'stock_operating_unit',
-#                                              'stock_warehouse_b2c')
-#        b2c_wh.lot_stock_id.write({'operating_unit_id': self.b2c.id})
         self.stock_location = data_model.get_object(cr, uid, 'stock',
                                                     'stock_location_stock')
         self.supplier_location =\
@@ -61,21 +57,21 @@ class TestStockOperatingUnit(common.TransactionCase):
                                           [self.b2c])
         # Create Incoming Shipments
         self.picking_in1_id = self._create_picking(cr, uid, self.user1_id,
-                                                self.b2c.id,
-                                                'in',
-                                                self.supplier_location.id,
-                                                self.stock_location.id)
+                                                   self.b2c.id,
+                                                   'in',
+                                                   self.supplier_location.id,
+                                                   self.stock_location.id)
         self.picking_in2_id = self._create_picking(cr, uid, self.user2_id,
-                                                self.b2c.id,
-                                                'in',
-                                                self.supplier_location.id,
-                                                self.location_b2c_id.id)
+                                                   self.b2c.id,
+                                                   'in',
+                                                   self.supplier_location.id,
+                                                   self.location_b2c_id.id)
         # Create Internal Shipment
         self.picking_int_id = self._create_picking(cr, uid, self.user1_id,
-                                                self.b2c.id,
-                                                'internal',
-                                                self.stock_location.id,
-                                                self.location_b2c_id.id)
+                                                   self.b2c.id,
+                                                   'internal',
+                                                   self.stock_location.id,
+                                                   self.location_b2c_id.id)
 
     def _create_user(self, cr, uid, login, groups, company, operating_units):
         """ Create a user."""
