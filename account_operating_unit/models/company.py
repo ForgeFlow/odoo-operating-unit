@@ -11,4 +11,20 @@ class res_company(orm.Model):
     _columns = {
         'inter_ou_clearing_account_id': fields.many2one(
             'account.account', 'Inter-operating unit clearing account'),
+        'ou_is_self_balanced': fields.boolean(
+                'Operating Units are self-balanced',
+                help="Activate if your company is required to generate a "
+                     "balanced balance sheet for each operating unit.")
         }
+
+    def _inter_ou_clearing_acc_required(self, cr, uid, ids):
+        for company in self.browse(cr, uid, ids):
+            if company.ou_is_self_balanced and not \
+                    company.inter_ou_clearing_account_id:
+                return False
+        return True
+
+    _constraints = [
+        (_inter_ou_clearing_acc_required,
+         'Please indicate an Inter-operating unit clearing account.',
+         ['ou_is_self_balanced'])]

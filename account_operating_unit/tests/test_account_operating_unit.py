@@ -167,7 +167,8 @@ class TestAccountOperatingUnit(common.TransactionCase):
             'company_id': company.id
         })
         self.company_model.write(cr, uid, [company.id],
-                                 {'inter_ou_clearing_account_id': account_id})
+                                 {'inter_ou_clearing_account_id': account_id,
+                                  'ou_is_self_balanced': True})
         return True
 
     def _create_account_move(self, cr, uid, account_id, context=None):

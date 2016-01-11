@@ -21,9 +21,6 @@ class AccountMoveLine(orm.Model):
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
                                              'Operating Unit'),
-        'ou_cleared_line_id': fields.many2one('account.move.line',
-                                              'Inter-OU Cleared move line',
-                                              required=False),
     }
 
     _defaults = {
@@ -49,118 +46,90 @@ class AccountMoveLine(orm.Model):
 class AccountMove(orm.Model):
     _inherit = "account.move"
 
+    def _prepare_inter_ou_balancing_move_line(self, cr, uid, move, ou_id,
+                                              ou_balances, context=None):
+
+        if not move.company_id.inter_ou_clearing_account_id:
+            raise orm.except_orm(
+                _('Error!'),
+                _("You need to define an inter-operating unit "
+                  "clearing account in the company "
+                  "settings."))
+
+        res = {
+            'name': 'OU-Balancing',
+            'move_id': move.id,
+            'journal_id': move.journal_id.id,
+            'period_id': move.period_id.id,
+            'date': move.date,
+            'operating_unit_id': ou_id,
+            'account_id': move.company_id.inter_ou_clearing_account_id.id
+        }
+
+        if ou_balances[ou_id] < 0.0:
+            res['debit'] = abs(ou_balances[ou_id])
+
+        else:
+            res['credit'] = ou_balances[ou_id]
+        return res
+
+    def _check_ou_balance(self, cr, uid, move, context=None):
+        # Look for the balance of each OU
+        ou_balance = {}
+        for line in move.line_id:
+            if line.operating_unit_id.id not in ou_balance:
+                ou_balance[line.operating_unit_id.id] = 0.0
+            ou_balance[line.operating_unit_id.id] += (line.debit - line.credit)
+        return ou_balance
+
     def post(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
         ml_obj = self.pool.get('account.move.line')
         for move in self.browse(cr, uid, ids, context=context):
+            if not move.company_id.ou_is_self_balanced:
+                continue
+
             # If all move lines point to the same operating unit, there's no
             #  need to create a balancing move line
             ou_list_ids = [line.operating_unit_id and
                            line.operating_unit_id.id for line in
-                           move.line_id]
+                           move.line_id if line.operating_unit_id]
             ou_ids = list(set(ou_list_ids))
             if len(ou_ids) <= 1:
                 continue
-
-            for line in move.line_id:
-                cleared = False
-                if line.operating_unit_id:
-                    cl_acc = line.company_id.inter_ou_clearing_account_id
-                    if not line.company_id.inter_ou_clearing_account_id:
-                        raise orm.except_orm(
-                            _('Error!'),
-                            _("You need to define an inter-operating unit "
-                              "clearing account in the company settings."))
-                    if line.account_id == cl_acc:
-                        continue
-                    # Check if this line has already been cleared
-                    for l in move.line_id:
-                        if line == l.ou_cleared_line_id:
-                            cleared = True
-                    if cleared:
-                        continue
-
-                    # Create a balancing move line in the operating unit
-                    # clearing account
-                    lid = ml_obj.create(cr, uid, {
-                        'name': line.name,
-                        'centralisation': line.centralisation,
-                        'partner_id': line.partner_id and
-                        line.partner_id.id or False,
-                        'account_id':
-                            line.company_id.inter_ou_clearing_account_id.id,
-                        'move_id': line.move_id.id,
-                        'journal_id': line.journal_id.id,
-                        'period_id': line.period_id.id,
-                        'date': line.date,
-                        'debit': line.credit,
-                        'credit': line.debit,
-                        'currency_id': line.currency_id.id,
-                        'amount_currency': line.amount_currency,
-                        'operating_unit_id': line.operating_unit_id.id,
-                        'analytic_account_id': line.analytic_account_id.id,
-                        'ou_cleared_line_id': line.id,
-                    }, context=context)
+            # Create balancing entries for un-balanced OU's.
+            curr_obj = self.pool['res.currency']
+            ou_balances = self._check_ou_balance(cr, uid, move,
+                                                 context=context)
+            for ou_id in ou_balances.keys():
+                # If the OU is already balanced, then do not continue
+                if curr_obj.is_zero(cr, uid, move.company_id.currency_id,
+                                    ou_balances[ou_id]):
+                    continue
+                # Create a balancing move line in the operating unit
+                # clearing account
+                line_data = self._prepare_inter_ou_balancing_move_line(
+                            cr, uid, move, ou_id, ou_balances, context=context)
+                if line_data:
+                    lid = ml_obj.create(cr, uid, line_data,
+                                        context=context)
                     self.write(cr, uid, [move.id],
                                {'line_id': [(4, lid)]}, context=context)
 
         return super(AccountMove, self).post(cr, uid, ids, context=context)
 
-    def _check_same_ou_dr_cr(self, cr, uid, ids):
+    def _check_ou(self, cr, uid, ids):
         for move in self.browse(cr, uid, ids):
-            dr = {}
-            cr = {}
-            account_ids = []
-            ou_ids = [line.operating_unit_id.id for line in move.line_id
-                      if line.operating_unit_id]
-            ou_ids = list(set(ou_ids))
-
+            if not move.company_id.ou_is_self_balanced:
+                continue
             for line in move.line_id:
-                account_ids.append(line.account_id.id)
-                if line.account_id.id not in dr:
-                    dr[line.account_id.id] = {}
-                if line.account_id.id not in cr:
-                    cr[line.account_id.id] = {}
-                operating_unit_id = line.operating_unit_id and \
-                    line.operating_unit_id.id
-                if operating_unit_id:
-                    cl_acc = \
-                        line.company_id.inter_ou_clearing_account_id
-                    if len(ou_ids) > 1 and not cl_acc:
-                        raise orm.except_orm(
-                            _('Error!'),
-                            _("You need to define an inter-operating unit "
-                              "clearing account in the company settings."))
-                    if not cl_acc:
-                        if operating_unit_id in dr[line.account_id.id]:
-                            dr[line.account_id.id][operating_unit_id] += \
-                                line.debit
-                        else:
-                            dr[line.account_id.id][operating_unit_id] = \
-                                line.debit
-
-                        if operating_unit_id in cr[line.account_id.id]:
-                            cr[line.account_id.id][operating_unit_id] += \
-                                line.credit
-                        else:
-                            cr[line.account_id.id][operating_unit_id] = \
-                                line.credit
-            for ou_id in ou_ids:
-                for account_id in account_ids:
-                    if (
-                        account_id in dr and
-                        account_id in cr and
-                        ou_id in dr[account_id] and
-                        ou_id in cr[account_id] and
-                        dr[account_id][ou_id] > 0 and
-                        cr[account_id][ou_id] > 0
-                    ):
-                        return False
+                if not line.operating_unit_id:
+                    return False
         return True
 
     _constraints = [
-        (_check_same_ou_dr_cr,
-         'The same operating unit cannot exist in the debit and credit '
-         'for the same account',
+        (_check_ou,
+         'The operating unit must be completed for each line if the '
+         'operating unit has been defined as self-balanced at company level.',
          ['line_id'])]
