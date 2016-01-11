@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# © 2015 Eficent - Jordi Ballester Alomar
+# © 2015 Eficent Business and IT Consulting Services S.L. -
+# Jordi Ballester Alomar
 # © 2015 Serpent Consulting Services Pvt. Ltd. - Sudhir Arya
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
@@ -23,7 +24,8 @@ making each OU self-balanced.
 - Adds the Operating Unit in the invoice
 - Implements security rules in the invoice
 ''',
-    'author': "Eficent, Odoo Community Association (OCA)",
+    'author': "Eficent Business and IT Consulting Services S.L., "
+              "Odoo Community Association (OCA)",
     'website': 'http://www.eficent.com',
     'depends': ['account', 'operating_unit'],
     'data': [

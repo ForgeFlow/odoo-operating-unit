@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# © 2015 Eficent - Jordi Ballester Alomar
+# © 2015 Eficent Business and IT Consulting Services S.L. -
+# Jordi Ballester Alomar
 # © 2015 Serpent Consulting Services Pvt. Ltd. - Sudhir Arya
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 from openerp.osv import orm, fields
@@ -8,6 +9,18 @@ from openerp.tools.translate import _
 
 class AccountMoveLine(orm.Model):
     _inherit = "account.move.line"
+
+    def create(self, cr, uid, vals, context=None, check=True):
+
+        if vals.get('move_id', False):
+            move = self.pool['account.move'].browse(cr, uid,
+                                                    vals['move_id'],
+                                                    context=context)
+            if move.operating_unit_id:
+                vals['operating_unit_id'] = move.operating_unit_id.id
+        return super(AccountMoveLine, self).create(cr, uid, vals,
+                                                   context=context,
+                                                   check=check)
 
     def _query_get(self, cr, uid, obj='l', context=None):
         query = super(AccountMoveLine, self)._query_get(cr, uid, obj=obj,
@@ -35,16 +48,36 @@ class AccountMoveLine(orm.Model):
                 return False
         return True
 
+    def _check_move_operating_unit(self, cr, uid, ids, context=None):
+        for ml in self.browse(cr, uid, ids, context=context):
+            if ml.move_id and ml.move_id.operating_unit_id and \
+                            ml.operating_unit_id and \
+                            ml.move_id.operating_unit_id != \
+                            ml.operating_unit_id:
+                return False
+        return True
+
     _constraints = [
         (_check_company_operating_unit,
          'The Company in the Move Line and in the '
          'Operating Unit must be the same.', ['operating_unit_id',
-                                              'company_id'])
+                                              'company_id']),
+        (_check_move_operating_unit,
+         'The Operating Unit in the Move Line and in the '
+         'Move must be the same.', ['operating_unit_id', 'move_id'])
     ]
 
 
 class AccountMove(orm.Model):
     _inherit = "account.move"
+
+    _columns = {
+        'operating_unit_id': fields.many2one('operating.unit',
+                                             'Default Operating Unit',
+                                             help="This operating unit will "
+                                                  "be defaulted in the move "
+                                                  "lines."),
+    }
 
     def _prepare_inter_ou_balancing_move_line(self, cr, uid, move, ou_id,
                                               ou_balances, context=None):
@@ -128,8 +161,59 @@ class AccountMove(orm.Model):
                     return False
         return True
 
+    def _check_ou_required_in_centralisation(self, cr, uid, ids):
+        for move in self.browse(cr, uid, ids):
+            if not move.operating_unit_id and \
+                    move.company_id.ou_is_self_balanced and \
+                    move.journal_id.centralisation:
+                    return False
+        return True
+
+    def _check_centralisation(self, cr, uid, ids, context=None):
+        res = super(AccountMove, self)._check_centralisation(cr, uid, ids,
+                                                       context=context)
+        for move in self.browse(cr, uid, ids, context=context):
+            if move.company_id.ou_is_self_balanced and \
+                    move.journal_id and move.journal_id.centralisation:
+                operating_unit_ids = self.pool['operating.unit'].search(
+                        cr, uid, [('company_id', '=',
+                                   move.journal_id.company_id.id)],
+                        context=context)
+                for ou_id in operating_unit_ids:
+                    move_ids = self.search(cr, uid, [
+                        ('period_id', '=', move.period_id.id),
+                        ('journal_id', '=', move.journal_id.id),
+                        ('operating_unit_id', '=', ou_id)])
+                    if len(move_ids) > 1:
+                        return False
+            else:
+                return res
+        return True
+
+    def _check_centralisation_same_ou(self, cursor, user, ids, context=None):
+        for move in self.browse(cursor, user, ids, context=context):
+            if move.company_id.ou_is_self_balanced and \
+                    move.journal_id.centralisation:
+                ou_ids = [line.operating_unit_id for line in move.line_id]
+                if len(list(set(ou_ids))) > 1:
+                    return False
+        return True
+
     _constraints = [
+        (_check_centralisation_same_ou,
+            'You cannot create a centralization journal entry referencing '
+            'multiple operating units.',
+            ['journal_id']),
+        (_check_centralisation,
+            'You cannot create more than one move per period on a centralized '
+            'journal for the same operating unit.',
+            ['journal_id']),
         (_check_ou,
          'The operating unit must be completed for each line if the '
          'operating unit has been defined as self-balanced at company level.',
-         ['line_id'])]
+         ['line_id']),
+        (_check_ou_required_in_centralisation,
+         'The operating unit is required in centralisation moves for '
+         'self-balancing operating units.', ['operating_unit_id',
+                                             'journal_id']),
+    ]
