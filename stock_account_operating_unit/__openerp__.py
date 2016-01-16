@@ -6,18 +6,11 @@
 
 {
     'name': 'Operating Unit in Stock Management with Real-Time Valuation',
-    'version': '1.0',
+    "version": "7.0.1.0.0",
     'category': 'Generic Modules/Sales & Purchases',
     'author': "Eficent,Odoo Community Association (OCA)",
     "license": "AGPL-3",
     'website': 'http://www.eficent.com',
-    'description': """\
-Stock account moves with Operating Unit
-=======================================
-- Creates account move lines when stock moves are posted between internal
-locations within the same company, but different OU’s.
-
-""",
     'depends': ['stock_operating_unit', 'account_operating_unit'],
     'data': [],
     'installable': True,
