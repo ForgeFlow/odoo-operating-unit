@@ -6,12 +6,14 @@
 
 {
     'name': 'Operating Unit in Stock Management with Real-Time Valuation',
-    "version": "7.0.1.0.0",
+    'version': '7.0.1.0.0',
     'category': 'Generic Modules/Sales & Purchases',
-    'author': "Eficent,Odoo Community Association (OCA)",
-    "license": "AGPL-3",
+    'author': "Eficent Business and IT Consulting Services S.L., "
+              "Serpent Consulting Services Pvt. Ltd.,"
+              "Odoo Community Association (OCA)",
     'website': 'http://www.eficent.com',
     'depends': ['stock_operating_unit', 'account_operating_unit'],
-    'data': [],
+    'data': [
+    ],
     'installable': True,
 }
