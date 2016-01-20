@@ -31,6 +31,7 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
         self.move_model = self.registry('stock.move')
         self.res_users_model = self.registry('res.users')
         self.picking_model = self.registry('stock.picking')
+        self.picking_partial_model = self.registry('stock.partial.picking')
         self.warehouse_model = self.registry('stock.warehouse')
         self.location_model = self.registry('stock.location')
         # company
@@ -98,11 +99,30 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
         self.product_id = self._create_product(cr, uid, self.user1_id, context=context)
 
         # Create Incoming Shipments
-#        self.picking_in1_id = self._create_picking(cr, uid, self.user1_id,
-#                                                   self.ou1.id,
-#                                                   'in',
-#                                                   self.supplier_location.id,
-#                                                   self.stock_location_stock.id)
+        self.picking_in1_id = self._create_picking(cr, uid, self.user1_id,
+                                                   self.ou1.id,
+                                                   'in',
+                                                   self.supplier_location.id,
+                                                   self.stock_location_stock.id)
+        self.picking_model.draft_validate(cr, self.user1_id, [self.picking_in1_id], context=context)
+        picking_browse_id = self.picking_model.browse(cr, self.user1_id, self.picking_in1_id, context=context)
+        print "picking_browse_id.state ###########################", picking_browse_id.state
+        partial_vals =\
+            self.picking_partial_model.default_get(cr, self.user1_id,
+                                                   ['move_ids', 'date',
+                                                    'picking_id'],
+                                                   context=context)
+        print "\n\n#######    ", partial_vals
+        moves = []
+        for move in partial_vals.pop('move_ids', []):
+            moves.append((0, 0, move))
+        partial_vals.update({'move_ids': moves})
+        print "\n\n&&&&&&&&&&&    ", partial_vals
+        partial_id = self.picking_partial_model.create(cr, self.user1_id, partial_vals, context=context)
+#        picking_partial_id = picking_partial_fields['picking_id']
+        self.picking_partial_model.do_partial(cr, uid, [partial_id], context=context)
+        picking_browse_id = self.picking_model.browse(cr, self.user1_id, self.picking_in1_id, context=context)
+        print "picking_browse_id.state 2222222222222222222222222222", picking_browse_id.state
 #        self.picking_in2_id = self._create_picking(cr, uid, self.user2_id,
 #                                                   self.b2c.id,
 #                                                   'in',
@@ -146,7 +166,7 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
             'name': 'a move',
             'product_id': self.product_id,
             'product_qty': 1.0,
-#            'product_uom': self.product_id.uom_id.id,
+            'product_uom': 1,
             'picking_id': picking_id,
             'location_id': src_loc_id,
             'location_dest_id': dest_loc_id,
@@ -161,10 +181,10 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
 #        self.assertNotEqual(picking_ids, [], '')
 #        picking_ids = self.picking_model.\
 #            search(cr, self.user2_id, [('id', '=', self.picking_in2_id)])
-#        self.assertNotEqual(picking_ids, [])
+#        self.assertNotEqual(picking_ids, [], '')
 #        picking_ids = self.picking_model.\
 #            search(cr, self.user1_id, [('id', '=', self.picking_int_id)])
-#        self.assertNotEqual(picking_ids, [])
+#        self.assertNotEqual(picking_ids, [], '')
 
 #    def _check_move_accounts(self, cr, uid, invoice_id):
 #        """
@@ -254,43 +274,9 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
         print "product_id ============================================", product_id
         return product_id
 
-
-#    def _create_account_move(self, cr, uid, account_id, context=None):
-#        """Create Journal Entries."""
-#        journal_ids = self.journal_model.search(cr, uid,
-#                                                [('code', '=', 'MISC')])
-#        # get default values of account move
-#        default_move_vals = self.acc_move_model.default_get(cr, uid, [],
-#                                                            context=context)
-#        move_vals = {}
-#        move_vals.update(default_move_vals)
-#        lines = [(0, 0, {
-#                    'name': 'Test',
-#                    'account_id': account_id,
-#                    'debit': 0,
-#                    'credit': 100,
-#                    'operating_unit_id': self.b2b.id,
-#                }),
-#                 (0, 0, {
-#                    'name': 'Test',
-#                    'account_id': account_id,
-#                    'debit': 100,
-#                    'credit': 0,
-#                    'operating_unit_id': self.b2c.id,
-#                 })
-#        ]
-#        move_vals.update({
-#            'journal_id': journal_ids and journal_ids[0],
-#            'line_id': lines,
-#        })
-#        move_id = self.acc_move_model.create(cr, uid, move_vals)
-#        # Post journal entries
-#        self.acc_move_model.button_validate(cr, uid, [move_id])
-#        return True
-
     def _check_balance(self, cr, uid, account_id, acc_type='clearing',
                        context=None):
-        print "_check_balance #################################################"
+        print "_check_balance ###############################################"
         """
         Check the balance of the account based on different operating units.
         """
@@ -306,9 +292,9 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
             self.assertEqual(balance, 1,
                              'Balance is 1 for Operating Unit Main.')
         else:
-            self.assertEqual(balance, -1,
+            self.assertEqual(balance, 1,
                              'Balance is 1 for Operating Unit Main.')
-        # Check balance for operating B2C units
+#        # Check balance for operating B2C units
         domain = [('account_id', '=', account_id),
                   ('operating_unit_id', '=', self.b2c.id)]
         balance = self._get_balance(cr, uid, domain)
@@ -316,8 +302,39 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
             self.assertEqual(balance, 0,
                              'Balance is 0 for Operating Unit B2C.')
         else:
-            self.assertEqual(balance, -1,
-                             'Balance is -1 for Operating Unit B2C.')
+            self.assertEqual(balance, 0,
+                             'Balance is 0 for Operating Unit B2C.')
+
+    def _check_balance1(self, cr, uid, account_id, acc_type='clearing',
+                       context=None):
+        print "_check_balance 111111111111111111111111111111111111111111111"
+        """
+        Check the balance of the account based on different operating units.
+        """
+        # Check balance for all operating units
+        domain = [('account_id', '=', account_id)]
+        balance = self._get_balance(cr, uid, domain)
+        self.assertEqual(balance, -1, 'Balance is 1 for all Operating Units.')
+        # Check balance for operating Main units
+        domain = [('account_id', '=', account_id),
+                  ('operating_unit_id', '=', self.ou1.id)]
+        balance = self._get_balance(cr, uid, domain)
+        if acc_type == 'cash':
+            self.assertEqual(balance, 0,
+                             'Balance is 0 for Operating Unit Main.')
+        else:
+            self.assertEqual(balance, 0,
+                             'Balance is 0 for Operating Unit Main.')
+#        # Check balance for operating B2C units
+#        domain = [('account_id', '=', account_id),
+#                  ('operating_unit_id', '=', self.b2c.id)]
+#        balance = self._get_balance(cr, uid, domain)
+#        if acc_type == 'cash':
+#            self.assertEqual(balance, -1,
+#                             'Balance is -1 for Operating Unit B2C.')
+#        else:
+#            self.assertEqual(balance, -1,
+#                             'Balance is -1 for Operating Unit B2C.')
 
     def _get_balance(self, cr, uid, domain):
         """
@@ -348,10 +365,15 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
 #        # Create & post journal entries
 #        self._create_account_move(cr, self.user1_id, self.account_id,
 #                                  context=context)
-        # Check the balance of the account
-#        self._check_balance(cr, self.user1_id, self.account_id2,
+        # Check the balance of the account - inventory
+        self._check_balance(cr, self.user1_id, self.account_id2,
+                            acc_type='cash',
+                            context=context)
+        # Check the balance of the account - grni
+#        self._check_balance1(cr, self.user1_id, self.account_id,
 #                            acc_type='cash',
 #                            context=context)
+
 #        clearing_account_id = self.company.inter_ou_clearing_account_id.id
 #        self._check_balance(cr, self.user1_id, clearing_account_id,
 #                            acc_type='clearing', context=context)
