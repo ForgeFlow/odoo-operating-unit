@@ -19,21 +19,14 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
         self.acc_move_model = self.registry('account.move')
         self.aml_model = self.registry('account.move.line')
         self.account_model = self.registry('account.account')
-        self.invoice_model = self.registry('account.invoice')
-        self.journal_model = self.registry('account.journal')
-        self.res_company_model = self.registry('res.company')
         self.product_model = self.registry('product.product')
         self.product_ctg_model = self.registry('product.category')
-        self.inv_line_model = self.registry('account.invoice.line')
         self.acc_type_model = self.registry('account.account.type')
         self.operating_unit_model = self.registry('operating.unit')
         self.company_model = self.registry('res.company')
         self.move_model = self.registry('stock.move')
-        self.res_users_model = self.registry('res.users')
         self.picking_model = self.registry('stock.picking')
         self.picking_partial_model = self.registry('stock.partial.picking')
-        self.warehouse_model = self.registry('stock.warehouse')
-        self.location_model = self.registry('stock.location')
         # company
         self.company = data_model.get_object(cr, uid, 'base', 'main_company')
         # groups
@@ -42,7 +35,7 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
         self.grp_acc_user = data_model.get_object(cr, uid, 'account',
                                                   'group_account_invoice')
         self.grp_stock_user = data_model.get_object(cr, uid, 'stock',
-                                                  'group_stock_user')
+                                                    'group_stock_user')
         # Main Operating Unit
         self.ou1 = data_model.get_object(cr, uid, 'operating_unit',
                                          'main_operating_unit')
@@ -55,8 +48,8 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
         # Partner
         self.partner1 = data_model.get_object(cr, uid, 'base',
                                               'res_partner_1')
-        self.stock_location_stock = data_model.get_object(cr, uid, 'stock',
-                                                    'stock_location_stock')
+        self.stock_location_stock = data_model.get_object(
+                cr, uid, 'stock', 'stock_location_stock')
         self.supplier_location =\
             data_model.get_object(cr, uid, 'stock', 'stock_location_suppliers')
         self.location_b2c_id = data_model.get_object(cr, uid,
@@ -69,66 +62,50 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
                                self.group_stock_manager],
                               self.company, [self.ou1, self.b2c],
                               context=context)
-
         # Create user2
         self.user2_id =\
             self._create_user(cr, uid, 'stock_account_user_2',
                               [self.grp_stock_user, self.grp_acc_user,
                                self.group_stock_manager],
                               self.company, [self.b2c], context=context)
+        # Create account for Goods Received Not Invoiced
+        acc_type = 'equity'
+        name = 'Goods Received Not Invoiced'
+        code = 'grni'
+        self.account_grni_id = self._create_account(cr, uid, acc_type, name,
+                                                    code, self.company,
+                                                    context=None)
 
-#        # Create cash - test account
-        self.account_id = self._create_account(cr, uid, self.company,
-                                                        context=context)
-        self.account_id1 = self._create_account1(cr, uid, self.company,
-                                                        context=context)
-        self.account_id2 = self._create_account2(cr, uid, self.company,
-                                                        context=context)
-        self.account_id3 = self._create_inter_ou_account(cr, uid, self.company,
-                                                         context=context)
-#    Create Product
+        # Create account for Cost of Goods Sold
+        acc_type = 'expense'
+        name = 'Cost of Goods Sold'
+        code = 'cogs'
+        self.account_cogs_id = self._create_account(cr, uid, acc_type, name,
+                                                    code, self.company,
+                                                    context=None)
+        # Create account for Inventory
+        acc_type = 'asset'
+        name = 'Inventory'
+        code = 'inventory'
+        self.account_inventory_id = self._create_account(cr, uid, acc_type,
+                                                         name, code,
+                                                         self.company,
+                                                         context=None)
+        # Create account for Inter-OU Clearing
+        acc_type = 'equity'
+        name = 'Inter-OU Clearing'
+        code = 'inter_ou'
+        self.account_inter_ou_clearing_id = self._create_account(
+                cr, uid, acc_type, name, code, self.company, context=None)
+
+        # Update company data
+        self.company_model.write(cr, uid, [self.company.id],
+                                 {'inter_ou_clearing_account_id':
+                                  self.account_inter_ou_clearing_id,
+                                  'ou_is_self_balanced': True})
+
+        # Create Product
         self.product_id = self._create_product(cr, uid, context=context)
-
-        # Create Incoming Shipments
-        self.picking_in1_id =\
-            self._create_picking(cr, uid, self.user1_id, self.ou1.id, 'in',
-                                 self.supplier_location.id,
-                                 self.stock_location_stock.id)
-        self._confirm_receive(cr, self.user1_id, self.picking_in1_id,
-                              context=context)
-        self._check_balance_inv(cr, uid, self.account_id2,
-                            acc_type='cash',
-                            context=context)
-        self._check_balance_grni(cr, uid, self.account_id,
-                            acc_type='cash',
-                            context=context)
-        self.picking_in2_id = self._create_picking(cr, uid, self.user2_id,
-                                                   self.b2c.id,
-                                                   'in',
-                                                   self.supplier_location.id,
-                                                   self.location_b2c_id.id)
-        self._confirm_receive(cr, self.user2_id, self.picking_in2_id,
-                              context=context)
-        self._check_balance_2_inv(cr, uid, self.account_id2,
-                            acc_type='cash',
-                            context=context)
-        self._check_balance_2_grni(cr, uid, self.account_id,
-                            acc_type='cash',
-                            context=context)
-
-#        # Create Internal Shipment
-        self.picking_int_id =\
-            self._create_picking(cr, uid, self.user1_id, self.b2c.id,
-                                 'internal', self.stock_location_stock.id,
-                                 self.location_b2c_id.id)
-        self._confirm_receive(cr, self.user1_id, self.picking_int_id,
-                              context=context)
-        self._check_balance_int(cr, uid, self.account_id2,
-                            acc_type='cash',
-                            context=context)
-#        self._check_balance_int_grni(cr, uid, self.account_id3,
-#                            acc_type='cash',
-#                            context=context)
 
     def _create_user(self, cr, uid, login, groups, company, operating_units,
                      context=None):
@@ -146,67 +123,26 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
         })
         return user_id
 
-    def _create_account(self, cr, uid, company, context=None):
+    def _create_account(self, cr, uid, acc_type, name, code, company,
+                        context=None):
         """Create an account."""
         type_ids = self.acc_type_model.search(cr, uid,
-                                              [('code', '=', 'equity')])
-        account_id = self.account_model.create(cr, uid, {
-            'name': 'Goods Received Not Invoiced',
-            'code': 'grni',
-            'type': 'liquidity',
-            'user_type': type_ids and type_ids[0],
-            'company_id': company.id
-        })
-        return account_id
-
-    def _create_account1(self, cr, uid, company, context=None):
-        """Create an account."""
-        type_ids = self.acc_type_model.search(cr, uid,
-                                              [('code', '=', 'expense')])
-        account_id = self.account_model.create(cr, uid, {
-            'name': 'COGS',
-            'code': 'cogs',
-            'type': 'liquidity',
-            'user_type': type_ids and type_ids[0],
-            'company_id': company.id
-        })
-        return account_id
-
-    def _create_account2(self, cr, uid, company, context=None):
-        """Create an account."""
-        type_ids = self.acc_type_model.search(cr, uid,
-                                              [('code', '=', 'asset')])
-        account_id = self.account_model.create(cr, uid, {
-            'name': 'Inventory',
-            'code': 'inventory',
-            'type': 'liquidity',
-            'user_type': type_ids and type_ids[0],
-            'company_id': company.id
-        })
-        return account_id
-
-    def _create_inter_ou_account(self, cr, uid, company, context=None):
-        """Create an account."""
-        type_ids = self.acc_type_model.search(cr, uid,
-                                              [('code', '=', 'equity')])
-        account_id = self.account_model.create(cr, uid, {
-            'name': 'Inter-OU Clearing',
-            'code': 'test_inter_ou',
+                                              [('code', '=', acc_type)])
+        account_grni_id = self.account_model.create(cr, uid, {
+            'name': name,
+            'code': code,
             'type': 'other',
             'user_type': type_ids and type_ids[0],
             'company_id': company.id
         })
-        self.company_model.write(cr, uid, [company.id],
-                                 {'inter_ou_clearing_account_id': account_id,
-                                  'ou_is_self_balanced': True})
-        return account_id
+        return account_grni_id
 
     def _create_product(self, cr, uid, context=None):
         """Create a Product."""
 #        group_ids = [group.id for group in groups]
         product_ctg_id = self.product_ctg_model.create(cr, uid, {
             'name': 'test_product_ctg',
-            'property_stock_valuation_account_id': self.account_id2
+            'property_stock_valuation_account_id': self.account_inventory_id
         })
         product_id = self.product_model.create(cr, uid, {
             'name': 'test_product',
@@ -215,8 +151,8 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
             'standard_price': 1.0,
             'list_price': 1.0,
             'valuation': 'real_time',
-            'property_stock_account_input': self.account_id,
-            'property_stock_account_output': self.account_id1,
+            'property_stock_account_input': self.account_grni_id,
+            'property_stock_account_output': self.account_cogs_id,
         })
         return product_id
 
@@ -256,143 +192,164 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
         self.picking_partial_model.do_partial(cr, uid, [partial_id],
                                               context=context)
 
-    def _check_balance_inv(self, cr, uid, account_id, acc_type='clearing',
-                       context=None):
+    def _check_account_balance(self, cr, uid, account_id, operating_unit=None,
+                               expected_balance=0.0, context=None):
         """
         Check the balance of the account based on different operating units.
         """
-        # Check balance for all operating units
         domain = [('account_id', '=', account_id)]
-        balance = self._get_balance(cr, uid, domain)
-        self.assertEqual(balance, 1, 'Balance is 1 for all Operating Units.')
-        # Check balance for operating Main units
-        domain = [('account_id', '=', account_id),
-                  ('operating_unit_id', '=', self.ou1.id)]
-        balance = self._get_balance(cr, uid, domain)
-        if acc_type == 'cash':
-            self.assertEqual(balance, 1,
-                             'Balance is 1 for Operating Unit Main.')
-        else:
-            self.assertEqual(balance, 1,
-                             'Balance is 1 for Operating Unit Main.')
+        if operating_unit:
+            domain.extend([('operating_unit_id', '=', operating_unit.id)])
 
-    def _check_balance_grni(self, cr, uid, account_id, acc_type='clearing',
-                       context=None):
-        """
-        Check the balance of the account based on different operating units.
-        """
-        # Check balance for all operating units
-        domain = [('account_id', '=', account_id)]
         balance = self._get_balance(cr, uid, domain)
-        self.assertEqual(balance, -1, 'Balance is -1 for all Operating Units.')
+        if operating_unit:
+            self.assertEqual(
+                    balance, expected_balance,
+                    'Balance is not %s for Operating Unit %s.'
+                    % (str(expected_balance), operating_unit.name))
+        else:
+            self.assertEqual(
+                    balance, expected_balance,
+                    'Balance is not %s for all Operating Units.'
+                    % str(expected_balance)) \
 
-    def _check_balance_2_inv(self, cr, uid, account_id, acc_type='clearing',
-                       context=None):
-        """
-        Check the balance of the account based on different operating units.
-        """
-        # Check balance for all operating units
-        domain = [('account_id', '=', account_id)]
-        balance = self._get_balance(cr, uid, domain)
-        self.assertEqual(balance, 2, 'Balance is 2 for all Operating Units.')
-        # Check balance for operating Main units
-        domain = [('account_id', '=', account_id),
-                  ('operating_unit_id', '=', self.ou1.id)]
-        balance = self._get_balance(cr, uid, domain)
-        if acc_type == 'cash':
-            self.assertEqual(balance, 1,
-                             'Balance is 1 for Operating Unit Main.')
-        else:
-            self.assertEqual(balance, 1,
-                             'Balance is 1 for Operating Unit Main.')
-
-    def _check_balance_2_grni(self, cr, uid, account_id, acc_type='clearing',
-                       context=None):
-        """
-        Check the balance of the account based on different operating units.
-        """
-        # Check balance for all operating units
-        domain = [('account_id', '=', account_id)]
-        balance = self._get_balance(cr, uid, domain)
-        self.assertEqual(balance, -2, 'Balance is -2 for all Operating Units.')
-
-    def _check_balance_int(self, cr, uid, account_id, acc_type='clearing',
-                       context=None):
-        """
-        Check the balance of the account based on different operating units.
-        """
-        # Check balance for all operating units
-        domain = [('account_id', '=', account_id)]
-        balance = self._get_balance(cr, uid, domain)
-        self.assertEqual(balance, 2, 'Balance is 2 for all Operating Units.')
-        # Check balance for operating Main units
-        domain = [('account_id', '=', account_id),
-                  ('operating_unit_id', '=', self.ou1.id)]
-        balance = self._get_balance(cr, uid, domain)
-        if acc_type == 'cash':
-            self.assertEqual(balance, 0,
-                             'Balance is 0 for Operating Unit Main.')
-        else:
-            self.assertEqual(balance, 0,
-                             'Balance is 0 for Operating Unit Main.')
-#        # Check balance for operating B2C units
-        domain = [('account_id', '=', account_id),
-                  ('operating_unit_id', '=', self.b2c.id)]
-        balance = self._get_balance(cr, uid, domain)
-        if acc_type == 'cash':
-            self.assertEqual(balance, 2,
-                             'Balance is 2 for Operating Unit B2C.')
-        else:
-            self.assertEqual(balance, 2,
-                             'Balance is 2 for Operating Unit B2C.')
-
-    def _check_balance_int_grni(self, cr, uid, account_id, acc_type='clearing',
-                       context=None):
-        """
-        Check the balance of the account based on different operating units.
-        """
-        # Check balance for all operating units
-        domain = [('account_id', '=', account_id)]
-        balance = self._get_balance(cr, uid, domain)
-        self.assertEqual(balance, 0, 'Balance is 0 for all Operating Units.')
-        # Check balance for operating Main units
-        domain = [('account_id', '=', account_id),
-                  ('operating_unit_id', '=', self.ou1.id)]
-        balance = self._get_balance(cr, uid, domain)
-        if acc_type == 'cash':
-            self.assertEqual(balance, 1,
-                             'Balance is 1 for Operating Unit Main.')
-        else:
-            self.assertEqual(balance, 1,
-                             'Balance is 1 for Operating Unit Main.')
-#        # Check balance for operating B2C units
-        domain = [('account_id', '=', account_id),
-                  ('operating_unit_id', '=', self.b2c.id)]
-        balance = self._get_balance(cr, uid, domain)
-        if acc_type == 'cash':
-            self.assertEqual(balance, -1,
-                             'Balance is -1 for Operating Unit B2C.')
-        else:
-            self.assertEqual(balance, -1,
-                             'Balance is -1 for Operating Unit B2C.')
 
     def _get_balance(self, cr, uid, domain):
         """
         Call read_group method and return the balance of particular account.
         """
-        if self.aml_model.read_group(cr, uid, domain,
+        aml_rec = self.aml_model.read_group(cr, uid, domain,
                                             ['debit', 'credit', 'account_id'],
-                                            ['account_id']) and\
-                                            self.aml_model.read_group(cr, uid,
-                                                                      domain,
-                                            ['debit', 'credit', 'account_id'],
-                                            ['account_id'])[0]:
-            aml_rec = self.aml_model.read_group(cr, uid, domain,
-                                                ['debit', 'credit',
-                                                 'account_id'],
-                                                ['account_id'])[0]
-            return aml_rec.get('debit', 0) - aml_rec.get('credit', 0)
+                                            ['account_id'])
+        if aml_rec:
+            return aml_rec[0].get('debit', 0) - aml_rec[0].get('credit', 0)
+        else:
+            return 0.0
 
-    def test_stock_account_ou(self):
-        """Test of Stock Account Operating Unit"""
-        return True
+    def test_pickings(self):
+        """Test account balances during receiving stock into the main
+        operating unit, then into b2c operating unit, and then transfer stock
+        from main ou to b2c."""
+        cr, uid, context = self.cr, self.uid, {}
+        # Create Incoming Shipment 1
+        picking_id =\
+            self._create_picking(cr, uid, self.user1_id, self.ou1.id, 'in',
+                                 self.supplier_location.id,
+                                 self.stock_location_stock.id)
+        # Receive it
+        self._confirm_receive(cr, self.user1_id, picking_id, context=context)
+        # GL account ‘Inventory’ has balance 1 irrespective of the OU
+        expected_balance = 1.0
+        self._check_account_balance(cr, uid, self.account_inventory_id,
+                                    operating_unit=None,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Inventory’ has balance 1 on OU main_operating_unit
+        expected_balance = 1.0
+        self._check_account_balance(cr, uid, self.account_inventory_id,
+                                    operating_unit=self.ou1,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Inventory’ has balance 0 on OU main_operating_unit
+        expected_balance = 0.0
+        self._check_account_balance(cr, uid, self.account_inventory_id,
+                                    operating_unit=self.b2c,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Goods Received Not Invoiced’ has balance - 1
+        # irrespective of the OU
+        expected_balance = -1.0
+        self._check_account_balance(cr, uid, self.account_grni_id,
+                                    operating_unit=None,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Goods Received Not Invoiced’ has balance -1 on Main OU
+        expected_balance = -1.0
+        self._check_account_balance(cr, uid, self.account_grni_id,
+                                    operating_unit=self.ou1,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Goods Received Not Invoiced’ has balance 0 on OU b2c
+        expected_balance = 0.0
+        self._check_account_balance(cr, uid, self.account_grni_id,
+                                    operating_unit=self.b2c,
+                                    expected_balance=expected_balance,
+                                    context=context)
+
+        # Create Incoming Shipment 2
+        picking_id = self._create_picking(cr, uid, self.user2_id, self.b2c.id,
+                                          'in', self.supplier_location.id,
+                                          self.location_b2c_id.id)
+        # Receive it
+        self._confirm_receive(cr, self.user2_id, picking_id, context=context)
+
+        # GL account ‘Inventory’ has balance 2 irrespective of the OU
+        expected_balance = 2.0
+        self._check_account_balance(cr, uid, self.account_inventory_id,
+                                    operating_unit=None,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Inventory’ has balance 1 on OU main_operating_unit
+        expected_balance = 1.0
+        self._check_account_balance(cr, uid, self.account_inventory_id,
+                                    operating_unit=self.ou1,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Inventory’ has balance 1 on OU b2c
+        expected_balance = 1.0
+        self._check_account_balance(cr, uid, self.account_inventory_id,
+                                    operating_unit=self.b2c,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Goods Received Not Invoiced’ has balance - 2
+        # irrespective of the OU
+        expected_balance = -2.0
+        self._check_account_balance(cr, uid, self.account_grni_id,
+                                    operating_unit=None,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Goods Received Not Invoiced’ has balance -1 on Main OU
+        expected_balance = -1.0
+        self._check_account_balance(cr, uid, self.account_grni_id,
+                                    operating_unit=self.ou1,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Goods Received Not Invoiced’ has balance 0 on OU b2c
+        expected_balance = -1.0
+        self._check_account_balance(cr, uid, self.account_grni_id,
+                                    operating_unit=self.b2c,
+                                    expected_balance=expected_balance,
+                                    context=context)
+
+        # Create Internal Transfer
+        picking_id =\
+            self._create_picking(cr, uid, self.user1_id, self.b2c.id,
+                                 'internal', self.stock_location_stock.id,
+                                 self.location_b2c_id.id)
+        # Receive it
+        self._confirm_receive(cr, self.user1_id, picking_id,
+                              context=context)
+        # GL account ‘Inventory’ has balance 2 irrespective of the OU
+        expected_balance = 2.0
+        self._check_account_balance(cr, uid, self.account_inventory_id,
+                                    operating_unit=None,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Inventory’ has balance 0 on OU main_operating_unit
+        expected_balance = 0.0
+        self._check_account_balance(cr, uid, self.account_inventory_id,
+                                    operating_unit=self.ou1,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Inventory’ has balance 2 on OU b2c
+        expected_balance = 2.0
+        self._check_account_balance(cr, uid, self.account_inventory_id,
+                                    operating_unit=self.b2c,
+                                    expected_balance=expected_balance,
+                                    context=context)
+        # GL account ‘Inter-OU clearing’ has balance 0 irrespective of the OU
+        expected_balance = 0.0
+        self._check_account_balance(cr, uid, self.account_inter_ou_clearing_id,
+                                    operating_unit=None,
+                                    expected_balance=expected_balance,
+                                    context=context)
