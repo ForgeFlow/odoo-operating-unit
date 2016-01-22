@@ -254,7 +254,7 @@ class TestAccountOperatingUnit(common.TransactionCase):
     def test_cross_ou_journal_entry(self):
         """Test that when I create a manual journal entry with multiple
         operating units, new cross-operating unit entries are created
-        automatically whent the journal entry is posted, ensuring that each
+        automatically when the journal entry is posted, ensuring that each
         OU is self-balanced."""
         cr, uid, context = self.cr, self.uid, {}
         # Create inter-ou - test account
