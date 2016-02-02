@@ -36,6 +36,7 @@ the operating units that he has access to.
     """,
     "data": [
         "security/crm_security.xml",
+        "views/crm_claim_view.xml"
     ],
     'demo': [
     ],

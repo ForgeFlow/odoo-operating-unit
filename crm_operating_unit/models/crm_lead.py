@@ -45,7 +45,7 @@ class CRMLead(orm.Model):
 
     _constraints = [
         (_check_company_operating_unit,
-         'The Company in the Purchase Order and in the Operating '
+         'The Company in the Lead/Opportunity and in the Operating '
          'Unit must be the same.', ['operating_unit_id',
                                     'requesting_operating_unit_id',
                                     'company_id'])]
