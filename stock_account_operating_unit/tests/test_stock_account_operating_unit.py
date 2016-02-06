@@ -177,6 +177,9 @@ class TestStockAccountOperatingUnit(common.TransactionCase):
         return picking_id
 
     def _confirm_receive(self, cr, uid, pick_id, context=None):
+        """
+        Checks the stock availability, validates and process the stock picking.
+        """
         self.picking_model.draft_validate(cr, uid, [pick_id], context=context)
         partial_vals =\
             self.picking_partial_model.default_get(cr, uid,
