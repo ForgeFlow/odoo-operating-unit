@@ -1,23 +1,8 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    Copyright (C) 2015 Eficent (<http://www.eficent.com/>)
-#              <contact@eficent.com>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# © 2015 Eficent Business and IT Consulting Services S.L. -
+# Jordi Ballester Alomar
+# © 2015 Serpent Consulting Services Pvt. Ltd. - Sudhir Arya
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 from openerp.osv import fields, orm
 from openerp.tools.translate import _
 
@@ -109,8 +94,8 @@ class SaleOrder(orm.Model):
     def _make_invoice(self, cr, uid, order, lines, context=None):
         invoice_obj = self.pool.get('account.invoice')
         res = super(SaleOrder, self)._make_invoice(
-            cr, uid, order,
-            lines, context=context)
+                                                   cr, uid, order,
+                                                   lines, context=context)
         invoice_obj.write(
             cr, uid, res,
             {'operating_unit_id': order.operating_unit_id.id},
