@@ -94,8 +94,8 @@ class SaleOrder(orm.Model):
     def _make_invoice(self, cr, uid, order, lines, context=None):
         invoice_obj = self.pool.get('account.invoice')
         res = super(SaleOrder, self)._make_invoice(
-            cr, uid, order,
-            lines, context=context)
+                                                   cr, uid, order,
+                                                   lines, context=context)
         invoice_obj.write(
             cr, uid, res,
             {'operating_unit_id': order.operating_unit_id.id},
