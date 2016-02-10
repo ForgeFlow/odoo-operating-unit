@@ -6,8 +6,8 @@
 
 {
     "name": "Operating Unit in Sales",
-    "version": "1.0",
-    "author": "Eficent",
+    "version": "7.0.1.0.0",
+    "author": "Eficent, Odoo Community Association (OCA)",
     "website": "http://www.eficent.com",
     "category": "Purchase Management",
     "depends": ["sale",
@@ -21,30 +21,8 @@ This module introduces the operating unit to the Sales Order.
 
 Security rules are defined to ensure that users can only display the
 Sales Orders in which they are allowed access to.
-
-
-Installation
-============
-
-No additional installation instructions are required.
-
-
-Configuration
-=============
-
-Go to 'Settings / Technical / Actions / User-defined Defaults' and remove
-the default set for the Shop.
-
-
-Credits
-=======
-
-Contributors
-------------
-
-* Jordi Ballester <jordi.ballester@eficent.com>
-
     """,
+    "license": "AGPL-3",
     "data": [
         "data/sale_data.xml",
         "views/sale_view.xml",

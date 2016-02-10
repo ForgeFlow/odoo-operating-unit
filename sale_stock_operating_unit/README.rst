@@ -2,29 +2,25 @@
    :target: https://www.gnu.org/licenses/agpl.html
    :alt: License: AGPL-3
 
-==========================
-Stock with Operating Units
-==========================
+===============================
+Operating Unit in Sales Stock
+===============================
 
-This module introduces the following features:
-- Adds the operating unit to the Warehouse.
-- Adds the operating unit to the Stock Location.
-- Adds the requesting operating unit to stock pickings.
-- Implements user's security access rules.
+This module was written to extend the Sales capabilities of Odoo.
+This module introduces the operating unit to the Sales Order.
+Security rules are defined to ensure that users can only display the
+Sales Orders in which they are allowed access to.
 
 Installation
 ============
 
-No external library is used.
+No additional installation instructions are required.
 
 Configuration
 =============
 
-To configure this module, you need to:
-
-* Assign Operating Unit to Warehouses.
-* Assign Operating Unit to Stock Locations. Assign only to internal stock
-locations.
+Go to 'Settings / Technical / Actions / User-defined Defaults' and remove
+the default set for the Shop.
 
 Usage
 =====
@@ -37,12 +33,12 @@ Bug Tracker
 ===========
 
 Bugs are tracked on `GitHub Issues
-<https://github.com/OCA/stock_operating_unit/issues>`_. In case of trouble, please
+<https://github.com/OCA/sale_stock_operating_unit/issues>`_. In case of trouble, please
 check there if your issue has already been reported. If you spotted it first,
 help us smashing it by providing a detailed and welcomed `feedback
 <https://github.com/OCA/
-stock_operating_unit/issues/new?body=module:%20
-stock_operating_unit%0Aversion:%20
+sale_stock_operating_unit/issues/new?body=module:%20
+sale_stock_operating_unit%0Aversion:%20
 7.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Credits
