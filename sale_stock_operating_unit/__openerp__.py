@@ -9,7 +9,7 @@
     "version": "7.0.1.0.0",
     "author": "Eficent, Odoo Community Association (OCA)",
     "website": "http://www.eficent.com",
-    "category": "Purchase Management",
+    "category": "Sales Management",
     "depends": ["sale_stock",
                 "sale_operating_unit",
                 "stock_operating_unit"],

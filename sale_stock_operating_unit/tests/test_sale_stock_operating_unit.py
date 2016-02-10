@@ -56,7 +56,7 @@ class TestSaleStockOperatingUnit(test_sale_operating_unit.
         return sale
 
     def test_security(self):
-        """Test Sale Operating Unit"""
+        """Test Sale Stock Operating Unit"""
         # User 2 is only assigned to Operating Unit B2C, and cannot
         # Access Sales order from Main Operating Unit.
         cr, uid = self.cr, self.uid
