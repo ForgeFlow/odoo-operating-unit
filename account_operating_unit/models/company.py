@@ -23,6 +23,7 @@ class res_company(orm.Model):
     }
 
     def _inter_ou_clearing_acc_required(self, cr, uid, ids):
+        return True
         for company in self.browse(cr, uid, ids):
             if company.ou_is_self_balanced and not \
                     company.inter_ou_clearing_account_id:
