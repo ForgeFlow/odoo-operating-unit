@@ -27,7 +27,6 @@ Sales Orders in which they are allowed access to.
         "data/sale_data.xml",
         "views/sale_view.xml",
         "security/sale_security.xml",
-
     ],
     'installable': True,
     'active': False,
