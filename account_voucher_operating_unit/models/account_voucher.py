@@ -25,6 +25,14 @@ from openerp.tools.translate import _
 class AccountVoucher(orm.Model):
     _inherit = "account.voucher"
 
+    def _get_default_operating_unit(self, cr, uid, context=None):
+        journal_id = self._get_journal(cr, uid, context=context)
+        journal = self.pool['account.journal'].browse(cr, uid, journal_id,
+                                                      context=context)
+        ttype = context.get('type', False)
+        if ttype in ('payment', 'receipt'):
+            return journal.default_debit_account_id.operating_unit_id.id
+
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
                                              'Operating Unit'),
@@ -33,9 +41,24 @@ class AccountVoucher(orm.Model):
     }
 
     _defaults = {
-        'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
-            'res.users').operating_unit_default_get(cr, uid, uid, context=c),
+        'operating_unit_id': _get_default_operating_unit
     }
+
+    def onchange_journal(self, cr, uid, ids, journal_id, line_ids, tax_id,
+                         partner_id, date, amount, ttype, company_id,
+                         context=None):
+        res = super(AccountVoucher, self).onchange_journal(
+            cr, uid, ids, journal_id, line_ids, tax_id, partner_id, date,
+            amount, ttype, company_id, context=context)
+        if journal_id and ttype in ('payment', 'receipt'):
+            journal = self.pool['account.journal'].browse(cr, uid,
+                                                          journal_id,
+                                                          context=context)
+            res['value']['operating_unit_id'] = \
+                journal.default_debit_account_id.operating_unit_id.id
+            res['value']['writeoff_operating_unit_id'] = \
+                journal.default_debit_account_id.operating_unit_id.id
+        return res
 
     def _check_company_operating_unit(self, cr, uid, ids, context=None):
         for r in self.browse(cr, uid, ids, context=context):
