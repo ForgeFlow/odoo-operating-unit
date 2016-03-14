@@ -35,7 +35,7 @@ class AccountVoucher(orm.Model):
 
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
-                                             'Operating Unit'),
+                                             'Operating Unit', required=False),
         'writeoff_operating_unit_id': fields.many2one(
             'operating.unit', 'Write-off Operating Unit', required=False),
     }
@@ -54,10 +54,11 @@ class AccountVoucher(orm.Model):
             journal = self.pool['account.journal'].browse(cr, uid,
                                                           journal_id,
                                                           context=context)
-            res['value']['operating_unit_id'] = \
-                journal.default_debit_account_id.operating_unit_id.id
-            res['value']['writeoff_operating_unit_id'] = \
-                journal.default_debit_account_id.operating_unit_id.id
+            ou_id = journal.default_debit_account_id.operating_unit_id.id
+            res['value'].update({
+                'operating_unit_id': ou_id,
+                'writeoff_operating_unit_id': ou_id
+            })
         return res
 
     def _check_company_operating_unit(self, cr, uid, ids, context=None):

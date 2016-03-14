@@ -44,7 +44,7 @@
             <field name="arch" type="xml">
                 <field name="journal_id" position="after">
                     <field name="operating_unit_id"
-                           groups="operating_unit.group_multi_operating_unit" readonly="True"/>
+                           groups="operating_unit.group_multi_operating_unit"/>
                 </field>
                 <field name="writeoff_acc_id" position="after">
                     <field name="writeoff_operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
