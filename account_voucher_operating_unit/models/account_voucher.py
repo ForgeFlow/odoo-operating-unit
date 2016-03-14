@@ -25,23 +25,11 @@ from openerp.tools.translate import _
 class AccountVoucher(orm.Model):
     _inherit = "account.voucher"
 
-    def _get_default_operating_unit(self, cr, uid, context=None):
-        journal_id = self._get_journal(cr, uid, context=context)
-        journal = self.pool['account.journal'].browse(cr, uid, journal_id,
-                                                      context=context)
-        ttype = context.get('type', False)
-        if ttype in ('payment', 'receipt'):
-            return journal.default_debit_account_id.operating_unit_id.id
-
     _columns = {
         'operating_unit_id': fields.many2one('operating.unit',
                                              'Operating Unit', required=False),
         'writeoff_operating_unit_id': fields.many2one(
             'operating.unit', 'Write-off Operating Unit', required=False),
-    }
-
-    _defaults = {
-        'operating_unit_id': _get_default_operating_unit
     }
 
     def onchange_journal(self, cr, uid, ids, journal_id, line_ids, tax_id,
@@ -104,6 +92,23 @@ class AccountVoucher(orm.Model):
          'payment or receipt.',
          ['operating_unit_id', 'journal_id', 'type'])
     ]
+
+    def create(self, cr, uid, vals, context=None):
+        if context is None:
+            context = {}
+
+        ttype = vals.get('type', False)
+        if ttype in ('payment', 'receipt'):
+            if vals.get('journal_id', False):
+                journal = self.pool['account.journal'].browse(
+                    cr, uid, vals['journal_id'], context=context)
+                vals['operating_unit_id'] = \
+                    journal.default_debit_account_id and \
+                    journal.default_debit_account_id.operating_unit_id and \
+                    journal.default_debit_account_id.operating_unit_id.id \
+                    or False
+        return super(AccountVoucher, self).create(cr, uid, vals,
+                                                  context=context)
 
     def first_move_line_get(self, cr, uid, voucher_id, move_id,
                             company_currency, current_currency, context=None):
