@@ -47,6 +47,7 @@ Contributors
     """,
     "data": [
         "security/mrp_security.xml",
+        "views/mrp_view.xml"
     ],
     'installable': True,
     'active': False,
