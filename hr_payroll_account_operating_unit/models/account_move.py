@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Copyright (C) 2014 Eficent (<http://www.eficent.com/>)
-#              Jordi Ballester Alomar <jordi.ballester@eficent.com>
+#    Copyright (C) 2016 Eficent (<http://www.eficent.com/>)
+#               <jordi.ballester@eficent.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,5 +18,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import hr_payslip
-from . import account_move
+from openerp.osv import fields, orm
+
+
+class AccountMove(orm.Model):
+
+    _inherit = 'account.move'
+
+    def create(self, cr, uid, vals, context=None):
+        if not context:
+            context = {}
+        if 'force_operating_unit' in context:
+            for line in vals['line_id']:
+                line[2].update(operating_unit= context['force_operating_unit'])
+        return super(AccountMove, self).create(cr, uid, vals, context)
