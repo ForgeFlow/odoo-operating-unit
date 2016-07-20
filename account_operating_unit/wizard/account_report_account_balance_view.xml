@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+    <data>
+
+        <record id="account_report_balance_view" model="ir.ui.view">
+            <field name="name">Trial Balance</field>
+            <field name="model">account.balance.report</field>
+            <field name="inherit_id" ref="account.account_report_balance_view"/>
+            <field name="arch" type="xml">
+                <page name="filters" position="after">
+                    <page string="Operating Units"
+                          name="operating_units"
+                          groups="operating_unit.group_multi_operating_unit">
+                        <field name="operating_unit_ids"/>
+                    </page>
+                </page>
+            </field>
+        </record>
+
+    </data>
+</openerp>
