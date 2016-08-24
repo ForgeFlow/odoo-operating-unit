@@ -13,6 +13,21 @@ class stock_warehouse(orm.Model):
                                              'Operating Unit'),
     }
 
+    def _check_warehouse_company_operating_unit(self, cr, uid, ids,
+                                                context=None):
+        for wh in self.browse(cr, uid, ids, context=context):
+            if (
+                        wh.operating_unit_id and
+                            wh.company_id != wh.operating_unit_id.company_id
+            ):
+                return False
+        return True
+
+    _constraints = [
+        (_check_warehouse_company_operating_unit,
+         'The Operating Unit of the Warehouse must '
+         'belong to the company', ['company_id', 'operating_unit_id'])]
+
     _defaults = {
         'operating_unit_id': lambda self, cr, uid, c: self.pool.get(
             'res.users').operating_unit_default_get(cr, uid, uid, context=c),
