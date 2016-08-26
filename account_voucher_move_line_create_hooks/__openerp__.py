@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Account Vouchers Move Line Create Hookd',
+    'name': 'Account Vouchers Move Line Create Hooks',
     'version': '1.0',
     'category': 'Generic Modules/Sales & Purchases',
     'description': '''
